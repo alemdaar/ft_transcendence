@@ -1,0 +1,17 @@
+services:
+  receiver:
+    build: ./backend/receiver
+    network_mode: host
+    volumes:
+      - receiver-data:/app/data
+
+  sender:
+    build: ./backend/sender
+    network_mode: host
+    environment:
+      RECEIVER_URL: http://127.0.0.1:8080
+    depends_on:
+      - receiver
+
+volumes:
+  receiver-data:

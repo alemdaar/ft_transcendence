@@ -1,0 +1,5 @@
+{
+  "from": "sender",
+  "message": "Hello from the sender container",
+  "sentAt": "2026-09-20T00:00:00Z"
+}
