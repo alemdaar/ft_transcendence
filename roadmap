@@ -1,0 +1,106 @@
+JAVASCRIPT
+│
+├── ✅ Variables: const / let
+├── ✅ Objects & arrays
+├── ✅ Functions
+├── ✅ Arrow functions =>
+├── ✅ find()
+├── ✅ filter()
+├── ✅ map()
+├── ✅ Destructuring
+├── ✅ Spread ...
+├── ✅ import / export
+├── ⬜ async
+├── ⬜ await
+├── ⬜ try / catch
+└── ⬜ A few JS details we'll encounter naturally
+        │
+        ▼
+TYPESCRIPT
+│
+├── Types
+├── Function types
+├── Objects
+├── type
+├── interface
+├── optional properties
+├── union types
+└── TypeScript modules
+        │
+        ▼
+NODE.JS
+│
+├── What Node actually is
+├── npm
+├── package.json
+├── dependencies
+├── environment variables
+└── Running/organizing a backend
+        │
+        ▼
+EXPRESS
+│
+├── Create server
+├── Request / Response
+├── GET / POST / PUT / DELETE
+├── Routes
+├── Controllers
+├── Middleware
+├── Services
+├── Error handling
+└── Validation
+        │
+        ▼
+DATABASE
+│
+├── PostgreSQL basics
+├── ORM
+├── Models/schema
+├── Migrations
+└── Express ↔ ORM ↔ PostgreSQL
+        │
+        ▼
+🔥 START REAL B1 USERS SERVICE
+│
+├── User model
+│
+├── Authentication
+│   ├── Register
+│   ├── Password hashing
+│   ├── Login
+│   ├── Access token
+│   ├── Refresh token
+│   └── Auth middleware
+│
+├── 42 OAuth
+│   ├── Redirect to 42
+│   ├── OAuth callback
+│   ├── Get Intra user
+│   └── Create/link local user
+│
+├── Profiles
+│   ├── GET profile
+│   ├── Update profile
+│   └── Avatar upload
+│
+├── User lookup for B2/B3
+│
+├── Friends
+│   ├── Send request
+│   ├── Accept
+│   ├── Reject
+│   ├── Remove
+│   └── List friends
+│
+├── Private messages
+│   ├── Message model
+│   ├── Message history
+│   └── Permissions
+│
+├── WebSocket private chat
+│
+├── Security + validation
+├── Tests
+├── Docker
+│
+└── Integration with B2/B3
