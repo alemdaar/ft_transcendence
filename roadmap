@@ -10,27 +10,27 @@ JAVASCRIPT
 ├── ✅ Destructuring
 ├── ✅ Spread ...
 ├── ✅ import / export
-├── ⬜ async
-├── ⬜ await
-├── ⬜ try / catch
-└── ⬜ A few JS details we'll encounter naturally
+├── ✅ async
+├── ✅ await
+├── ✅ try / catch
+└── ✅ A few JS details we'll encounter naturally
         │
         ▼
 TYPESCRIPT
 │
-├── Types
-├── Function types
-├── Objects
-├── type
-├── interface
-├── optional properties
-├── union types
-└── TypeScript modules
+├── ✅ Types
+├── ✅ Function types
+├── ✅ Objects
+├── ✅ type
+├── ✅ interface
+├── ✅ optional properties
+├── ✅ union types
+└── ✅ TypeScript modules
         │
         ▼
 NODE.JS
 │
-├── What Node actually is
+├── .. What Node actually is
 ├── npm
 ├── package.json
 ├── dependencies

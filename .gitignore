@@ -3,3 +3,7 @@ target/
 
 # Local environment files
 .env
+
+# Generated and local dependency files
+node_modules/
+dist/

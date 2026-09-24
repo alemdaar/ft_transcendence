@@ -1,18 +1,24 @@
-how to use typescript and run it ?
++ how to use typescript and run it ?
+
++ what npm init -y means exactly ?
 
 + what is package.json?
 
-- whats npm install --save-dev typescript ?
++ what is the difference between package.json and and package-lock.json?
 
-- what is the difference between package.json and and package-lock.json?
++ understnad deeply HTTP server framework
 
-- what node modules has and what do they mean?
++ whats npm install --save-dev typescript ?
 
-- whats npx tsc index.ts --outDir dist?
++ what node modules has and what do they mean?
 
-- since typescript has a stricty rule for specifying the datatype, then why is this valid "const lesson = {
++ whats npx tsc index.ts --outDir dist?
+
++ is npx just for typescript ?
+
++ since typescript has a strictly rule for specifying the datatype, then why is this valid "const lesson = {
 	title: "Types",
 	completed: false,
-};"
+};" i mean title and completed ?
 
 - what "return `${name} is starting TypeScript lesson ${number}.`;" means
