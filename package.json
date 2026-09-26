@@ -20,5 +20,8 @@
   "homepage": "https://github.com/alemdaar/ft_transcendence#readme",
   "devDependencies": {
     "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
