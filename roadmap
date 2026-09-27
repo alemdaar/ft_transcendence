@@ -58,13 +58,14 @@ EXPRESS
 └── ✅ error handling
         │
         ▼
-DATABASE
-│
-├── PostgreSQL basics
-├── ORM
-├── Models/schema
-├── Migrations
-└── Express ↔ ORM ↔ PostgreSQL
+POSTGRESQL + ORM
+├── ✅ Database / tables
+├── ✅ Primary keys
+├── ✅ Foreign keys
+├── ✅ Relationships
+├── ✅ ORM
+├── ✅ Schema / models
+└── ✅ Migrations
         │
         ▼
 🔥 START REAL B1 USERS SERVICE
