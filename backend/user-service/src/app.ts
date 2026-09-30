@@ -1,14 +1,10 @@
 import express from "express";
+import healthRouter from "./routes/health.routes";
 
 const app = express();
 
 app.use(express.json());
 
-app.get("/health", (req, res) => {
-    res.status(200).json({
-        status: "ok",
-        service: "user-service"
-    });
-});
+app.use("/health", healthRouter);
 
 export default app;
