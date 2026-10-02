@@ -1,14 +1,9 @@
-const users = [
-    {
-        id: 1,
-        username: "oussama"
-    },
-    {
-        id: 2,
-        username: "ahmed"
-    }
-];
+import { prisma } from "../lib/prisma";
 
-export function findUserById(id: number) {
-    return users.find((user) => user.id === id);
+export async function findUserById(id: number) {
+    return prisma.user.findUnique({
+        where: {
+            id: id
+        }
+    });
 }
