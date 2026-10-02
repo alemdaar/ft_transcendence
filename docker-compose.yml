@@ -3,12 +3,15 @@ services:
     image: postgres:17
     container_name: transcendence-postgres
     restart: unless-stopped
+
     environment:
-      POSTGRES_USER: transcendence
-      POSTGRES_PASSWORD: transcendence
-      POSTGRES_DB: transcendence
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
