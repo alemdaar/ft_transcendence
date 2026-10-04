@@ -6,7 +6,23 @@ export async function createPendingRegistration(data: {
     code: string;
     expiresAt: Date;
 }) {
-    return prisma.pendingRegistration.create({
-        data
+    return prisma.pendingRegistration.upsert({
+        where: {
+            email: data.email
+        },
+        update: {
+            passwordHash: data.passwordHash,
+            code: data.code,
+            expiresAt: data.expiresAt
+        },
+        create: data
+    });
+}
+
+export async function findPendingRegistration(email: string) {
+    return prisma.pendingRegistration.findUnique({
+        where: {
+            email
+        }
     });
 }
