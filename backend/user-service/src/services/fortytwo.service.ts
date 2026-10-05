@@ -15,6 +15,12 @@ export type FortyTwoUser = {
         id: number;
         name: string;
         time_zone: string;
+    }[];
+
+    campus_users?: {
+        id: number;
+        user_id: number;
+        campus_id: number;
         is_primary: boolean;
     }[];
 };

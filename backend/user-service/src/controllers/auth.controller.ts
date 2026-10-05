@@ -120,8 +120,15 @@ export async function verifyEmail(req: Request, res: Response) {
         });
     }
 
+    const primaryCampusId =
+        profile.campus_users?.find(
+            campusUser => campusUser.is_primary
+        )?.campus_id;
+
     const campus =
-        profile.campus?.find(campus => campus.is_primary)?.name
+        profile.campus?.find(
+            campus => campus.id === primaryCampusId
+        )?.name
         ?? profile.campus?.[0]?.name
         ?? "1337";
 
