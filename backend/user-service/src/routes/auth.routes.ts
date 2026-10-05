@@ -7,10 +7,24 @@ import {
     callback42
 } from "../controllers/auth.controller";
 
+import {
+    registerRateLimit,
+    verifyEmailRateLimit
+} from "../middleware/auth-rate-limit";
+
 const authRouter = Router();
 
-authRouter.post("/register", register);
-authRouter.post("/verify-email", verifyEmail);
+authRouter.post(
+    "/register",
+    registerRateLimit,
+    register
+);
+
+authRouter.post(
+    "/verify-email",
+    verifyEmailRateLimit,
+    verifyEmail
+);
 
 authRouter.get("/42", authorize42);
 authRouter.get("/42/callback", callback42);
