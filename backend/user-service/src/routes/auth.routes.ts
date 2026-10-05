@@ -1,8 +1,4 @@
 import { Router } from "express";
-import {
-    register,
-    verifyEmail
-} from "../controllers/auth.controller";
 
 import {
     register,
