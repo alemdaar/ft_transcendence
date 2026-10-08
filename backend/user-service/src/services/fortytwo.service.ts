@@ -6,17 +6,10 @@ export type FortyTwoUser = {
     id: number;
     login: string;
     email: string;
-
-    image?: {
-        link?: string;
-    };
-
-    campus?: {
-        id: number;
-        name: string;
-        time_zone: string;
-    }[];
-
+    displayname: string;
+    location: string | null;
+    image?: { link?: string };
+    campus?: { id: number; name: string; time_zone: string }[];
     campus_users?: {
         id: number;
         user_id: number;

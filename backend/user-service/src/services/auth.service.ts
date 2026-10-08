@@ -58,6 +58,8 @@ export async function createUser(data: {
     intraId: number;
     avatarUrl?: string;
     campus: string;
+    displayname?: string | null;
+    location?: string | null;
 }) {
     return prisma.user.create({
         data: {
@@ -66,7 +68,9 @@ export async function createUser(data: {
             username: data.username,
             intraId: data.intraId,
             avatarUrl: data.avatarUrl,
-            campus: data.campus
+            campus: data.campus,
+            displayname: data.displayname ?? null,
+            location: data.location ?? null
         }
     });
 }

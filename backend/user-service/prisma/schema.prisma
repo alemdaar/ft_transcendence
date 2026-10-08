@@ -16,8 +16,11 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
 
-  email        String @unique
-  passwordHash String?
+  email         String @unique
+  passwordHash  String?
+
+  displayname String?
+  location    String?
 
   username String @unique
   intraId  Int    @unique

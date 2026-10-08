@@ -103,7 +103,6 @@ export async function verifyEmail(req: Request, res: Response) {
 
     try {
         profile = await get42UserByLogin(login);
-        // console.log("42 CAMPUSES:", profile.campus);
     } catch (error) {
         console.error("42 profile lookup error:", error);
 
@@ -138,7 +137,9 @@ export async function verifyEmail(req: Request, res: Response) {
         username: profile.login,
         intraId: profile.id,
         avatarUrl: profile.image?.link,
-        campus
+        campus,
+        displayname: profile.displayname,
+        location: profile.location
     });
 
     await deletePendingRegistration(email);
@@ -152,7 +153,9 @@ export async function verifyEmail(req: Request, res: Response) {
             intraId: user.intraId,
             avatarUrl: user.avatarUrl,
             campus: user.campus,
-            points: user.points
+            points: user.points,
+            displayname: user.displayname,
+            location: user.location
         }
     });
 }
@@ -243,6 +246,8 @@ export async function callback42(req: Request, res: Response) {
             id: number;
             login: string;
             email: string;
+            displayname: string;
+            location: string | null;
 
             image?: {
                 link?: string;
@@ -301,7 +306,9 @@ export async function callback42(req: Request, res: Response) {
                     intraId: existingUser.intraId,
                     avatarUrl: existingUser.avatarUrl,
                     campus: existingUser.campus,
-                    points: existingUser.points
+                    points: existingUser.points,
+                    displayname: existingUser.displayname,
+                    location: existingUser.location
                 }
             });
         }
@@ -318,6 +325,8 @@ export async function callback42(req: Request, res: Response) {
             email: profile.email,
             passwordHash: null,
             username: profile.login,
+            displayname: profile.displayname,
+            location: profile.location,
             intraId: profile.id,
             avatarUrl: profile.image?.link,
             campus
@@ -332,7 +341,9 @@ export async function callback42(req: Request, res: Response) {
                 intraId: user.intraId,
                 avatarUrl: user.avatarUrl,
                 campus: user.campus,
-                points: user.points
+                points: user.points,
+                displayname: user.displayname,
+                location: user.location
             }
         });
     } catch (error) {
