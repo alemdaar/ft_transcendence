@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm ()
 {
@@ -9,6 +9,7 @@ export default function RegisterForm ()
     const [error, setError] = useState("");
     const [success, setsuccess] =  useState(false);
     const [loading, setloading] = useState(false);
+    const navigate = useNavigate();
 
 
     const handleEmail = (e) => setemail(e.target.value);
@@ -60,8 +61,13 @@ export default function RegisterForm ()
             const result = await response.json();
             if (!response.ok)
                 setError("email already registre")
-            else setsuccess(true);
-            console.log(result);
+            else {
+                setsuccess(true);
+                navigate("/verify-email", 
+                    { state: {email} }
+                );
+            }
+            
             
         } catch (error) {
             setError("Somthing happen wrong", error);
@@ -78,16 +84,19 @@ export default function RegisterForm ()
                 value={email}
                 onChange={handleEmail}
             />
+            <br />
             <input type="password" 
                 placeholder="at least 6 characters"
                 value={password}
                 onChange={handlePassword}
             />
+            <br />
             <input type="password" 
                 placeholder="Confirm Your Password"
                 value={confirmpassword}
                 onChange={handleConfirmPassword}
             />
+            <br />
             <button type="submit" disabled={loading}>
                 {loading ? "Creating account..." : "Sign-up"}</button>
         </form>

@@ -2,6 +2,7 @@ import Login from './pages/login.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from './pages/Register.jsx'
 import { Link } from 'react-router-dom';
+import VerifyEmail from './pages/VerifyEmail.jsx';
 
 
 function Home()
@@ -26,6 +27,7 @@ export default function App() {
 
         <Route path='/login' element={<Login/>} />
         <Route path='/register' element={<Register/>} />
+        <Route path='/verify-email' element={<VerifyEmail/>} />
       </Routes>
     </BrowserRouter>
   )

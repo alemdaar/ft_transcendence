@@ -71,16 +71,19 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit}>
         {error && <p>{error}</p>}
         {sucess && <p>"Login sucessfully !"</p> }
+        <br />
         <input type="email" 
             placeholder="Enter your email"
             value={email}
             onChange={handleChange}
             />
+        <br />
         <input type="password" 
             placeholder="Password"
             value={password}
             onChange={handlePass}
         />
+        <br />
         <button type="submit" disabled={loading}>
             {loading ? "login in.." : "Login"}</button>
     </form>
