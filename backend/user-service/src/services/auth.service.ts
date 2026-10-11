@@ -75,10 +75,12 @@ export async function createUser(data: {
     });
 }
 export async function deleteExpiredPendingRegistrations() {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
     return prisma.pendingRegistration.deleteMany({
         where: {
             expiresAt: {
-                lt: new Date()
+                lt: cutoff
             }
         }
     });

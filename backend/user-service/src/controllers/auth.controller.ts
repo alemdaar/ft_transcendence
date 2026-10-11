@@ -47,9 +47,9 @@ export async function register(req: Request, res: Response) {
     const code = crypto.randomInt(100000, 1000000).toString();
 
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-    await deleteExpiredPendingRegistrations();
     
+    await deleteExpiredPendingRegistrations();
+
     await createPendingRegistration({
         email,
         passwordHash,
@@ -126,11 +126,9 @@ export async function verifyEmail(req: Request, res: Response) {
         });
     }
 
-    if (pending.expiresAt < new Date()) {
-        await deletePendingRegistration(pending.email);
-
+    if (pending.expiresAt <= new Date()) {
         return res.status(400).json({
-            error: "Verification code expired"
+            error: "Verification code expired. Please request a new code."
         });
     }
 
