@@ -1,6 +1,11 @@
 type FortyTwoTokenResponse = {
     access_token: string;
+    expires_in: number;
 };
+
+let cachedToken: string | null = null;
+let tokenExpiresAt: number = 0;
+let pendingTokenRequest: Promise<string> | null = null;
 
 export type FortyTwoUser = {
     id: number;
@@ -19,44 +24,63 @@ export type FortyTwoUser = {
 };
 
 async function get42AppToken(): Promise<string> {
-    const clientId = process.env.FORTYTWO_CLIENT_ID;
-    const clientSecret = process.env.FORTYTWO_CLIENT_SECRET;
-
-    if (!clientId || !clientSecret) {
-        throw new Error("42 API credentials are not configured");
+    if (cachedToken && Date.now() < tokenExpiresAt) {
+        return cachedToken;
     }
+    if (pendingTokenRequest) {
+        return pendingTokenRequest;
+    }
+    pendingTokenRequest = (async (): Promise<string> => {
 
-    const response = await fetch(
-        "https://api.intra.42.fr/oauth/token",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                grant_type: "client_credentials",
-                client_id: clientId,
-                client_secret: clientSecret
-            })
+        const clientId = process.env.FORTYTWO_CLIENT_ID;
+        const clientSecret = process.env.FORTYTWO_CLIENT_SECRET;
+
+        if (!clientId || !clientSecret) {
+            throw new Error("42 API credentials are not configured");
         }
-    );
 
-    if (!response.ok) {
-        const body = await response.text();
-
-        console.error(
-            `42 app token failed: ${response.status} ${response.statusText}`,
-            body
+        const response = await fetch(
+            "https://api.intra.42.fr/oauth/token",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    grant_type: "client_credentials",
+                    client_id: clientId,
+                    client_secret: clientSecret
+                })
+            }
         );
 
-        throw new Error(
-            `42 app authentication failed with status ${response.status}`
-        );
+        if (!response.ok) {
+            const body = await response.text();
+
+            console.error(
+                `42 app token failed: ${response.status} ${response.statusText}`,
+                body
+            );
+
+            throw new Error(
+                `42 app authentication failed with status ${response.status}`
+            );
+        }
+
+        const data = await response.json() as FortyTwoTokenResponse;
+
+        cachedToken = data.access_token;
+
+        tokenExpiresAt = Date.now() + (data.expires_in - 30) * 1000;
+
+        return cachedToken
+    })();
+
+    try {
+        return await pendingTokenRequest;
+    } finally {
+        pendingTokenRequest = null;
     }
-
-    const data = await response.json() as FortyTwoTokenResponse;
-
-    return data.access_token;
 }
 
 export async function get42UserByLogin(

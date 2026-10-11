@@ -3,8 +3,8 @@ import { rateLimit } from "express-rate-limit";
 export const registerRateLimit = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 5,
-    standardHeaders: "draft-8",
-    legacyHeaders: false,
+    standardHeaders: "draft-8", // later
+    legacyHeaders: false, // later
     message: {
         error: "Too many registration attempts. Please try again later."
     }
