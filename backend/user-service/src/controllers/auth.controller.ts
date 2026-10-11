@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import argon2 from "argon2";
 import crypto from "node:crypto";
+import { z } from "zod";
 
 
 import {
@@ -60,6 +61,48 @@ export async function register(req: Request, res: Response) {
 
     return res.status(201).json({
         message: "Verification required"
+    });
+}
+
+export async function resendVerificationCode(req: Request, res: Response) {
+    const result = z.object({
+        email: z.email().endsWith("@student.1337.ma")
+    }).safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            error: "Invalid email address"
+        });
+    }
+
+    const { email } = result.data;
+    const pending = await findPendingRegistration(email);
+ 
+    if (!pending) {
+        return res.status(200).json({
+            message: "If a pending registration exists, a new code will be sent."
+        });
+    }
+    const lastCodeSentAt = pending.expiresAt.getTime() - 5 * 60 * 1000;
+
+    if (Date.now() - lastCodeSentAt < 60 * 1000) {
+        return res.status(200).json({
+            message: "If a pending registration exists, a new code will be sent."
+        });
+    }
+    const code = crypto.randomInt(100000, 1000000).toString();
+
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    await createPendingRegistration({
+        email,
+        passwordHash: pending.passwordHash,
+        code,
+        expiresAt
+    });
+    await sendVerificationEmail(email, code);
+    return res.status(200).json({
+        message: "If a pending registration exists, a new code will be sent."
     });
 }
 

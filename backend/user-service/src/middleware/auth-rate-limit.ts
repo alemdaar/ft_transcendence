@@ -19,3 +19,13 @@ export const verifyEmailRateLimit = rateLimit({
         error: "Too many verification attempts. Please try again later."
     }
 });
+
+export const resendCodeRateLimit = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 3,
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: {
+        error: "Too many resend attempts. Please try again later."
+    }
+});

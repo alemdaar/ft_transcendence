@@ -7,7 +7,7 @@ export default defineConfig({
         proxy: {
             '/auth': {
                 target: 'http://localhost:3001',
-                changeOrigin: true
+                changeOrigin: truec 
             }
         }
     }
