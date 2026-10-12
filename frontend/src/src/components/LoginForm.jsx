@@ -45,7 +45,7 @@ export default function LoginForm() {
         // }, 2000);
         try {
             
-            const response =  await fetch('http://localhost:3001/auth/login', {
+            const response =  await fetch('/auth/login', {
                 method: "POST",
                 headers: {
                     "content-type" : "application/json"
