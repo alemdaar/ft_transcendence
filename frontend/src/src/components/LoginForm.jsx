@@ -45,7 +45,7 @@ export default function LoginForm() {
         // }, 2000);
         try {
             
-            const response =  await fetch('/auth/login', {
+            const response =  await fetch('http://localhost:3001/auth/login', {
                 method: "POST",
                 headers: {
                     "content-type" : "application/json"
@@ -61,30 +61,46 @@ export default function LoginForm() {
                     setError("Email or password not valid");
             else setSucess(true)
         } catch (error) {
-            console.log(error)
+                console.error(error);
+                setError("Cannot connect to the server.");
         }
         finally {setLoading(false);}
             
     }
 
   return (
-    <form onSubmit={handleSubmit}>
-        {error && <p>{error}</p>}
-        {sucess && <p>"Login sucessfully !"</p> }
-        <br />
-        <input type="email" 
+    <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+            <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+                {error}
+            </p>
+        )}
+
+        {sucess && (
+            <p className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+                Login successful!
+            </p>
+        )}
+       
+        <input
+            type="email"
             placeholder="Enter your email"
             value={email}
             onChange={handleChange}
-            />
-        <br />
+            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
+        />
+       
         <input type="password" 
             placeholder="Password"
             value={password}
             onChange={handlePass}
+            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
         />
-        <br />
-        <button type="submit" disabled={loading}>
+       
+        <button type="submit" disabled={loading}
+            className="mt-5 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-green-600 dark:hover:bg-green-500"
+
+        >
             {loading ? "login in.." : "Login"}</button>
     </form>
   )
