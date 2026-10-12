@@ -16,9 +16,9 @@ export default function LoginForm() {
         e.preventDefault();
         setSucess(false);
         setError("");
-        if (password.length < 6)
+        if (password.length < 8)
         {
-            setError("Password should contain at least 6 characters");
+            setError("Password should contain at least 8 characters");
             return ;
         }
         if (!email.includes('@'))
@@ -30,19 +30,9 @@ export default function LoginForm() {
             email, 
             password
         }
-        const fakeData = {
-            email: "a@b.c",
-            password: "123456"
-        }
+
         setLoading(true);
-        // setTimeout(() => {
-        //     console.log('waiting api...') 
-        //     if (data.email === fakeData.email && data.password === fakeData.password)
-        //             setSucess(true);
-        //     else
-        //         setError("Email or password not valid")
-        //     setLoading(false);
-        // }, 2000);
+
         try {
             
             const response =  await fetch('/auth/login', {
@@ -54,11 +44,12 @@ export default function LoginForm() {
     
             });
             const result = await response.json();
-            console.log(result);
+            
         
     
             if (!response.ok)
-                    setError("Email or password not valid");
+                    setError(result.message ||
+                            result.error || "Login failed. Please try again");
             else setSucess(true)
         } catch (error) {
                 console.error(error);
