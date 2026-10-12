@@ -5,14 +5,20 @@ import {
     verifyEmail,
     resendVerificationCode,
     authorize42,
-    callback42
+    callback42,
+    login,
+    me,
+    logout
 } from "../controllers/auth.controller";
 
 import {
     registerRateLimit,
     verifyEmailRateLimit,
-    resendCodeRateLimit
+    resendCodeRateLimit,
+    loginRateLimit
 } from "../middleware/auth-rate-limit";
+
+import { requireAuth } from "../middleware/require-auth";
 
 const authRouter = Router();
 
@@ -32,6 +38,24 @@ authRouter.post(
     "/resend-code",
     resendCodeRateLimit,
     resendVerificationCode
+);
+
+authRouter.post(
+    "/login",
+    loginRateLimit,
+    login
+);
+
+authRouter.get(
+    "/me",
+    requireAuth,
+    me
+);
+
+authRouter.post(
+    "/logout",
+    requireAuth,
+    logout
 );
 
 authRouter.get("/42", authorize42);

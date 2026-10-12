@@ -19,3 +19,14 @@ export const verifyEmailSchema = z.object({
         .length(6)
         .regex(/^\d{6}$/)
 });
+
+export const loginSchema = z.object({
+    email: z
+        .email()
+        .endsWith("@student.1337.ma"),
+
+    password: z
+        .string()
+        .min(1)
+        .max(128)
+});

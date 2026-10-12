@@ -6,7 +6,8 @@ import { z } from "zod";
 
 import {
     registerSchema,
-    verifyEmailSchema
+    verifyEmailSchema,
+    loginSchema
 } from "../schema/auth.schema";
 
 import {
@@ -16,7 +17,8 @@ import {
     deleteExpiredPendingRegistrations,
     findUserByEmail,
     findUserByIntraId,
-    createUser
+    createUser,
+    findUserById
 } from "../services/auth.service";
 
 import { sendVerificationEmail } from "../services/email.service";
@@ -395,3 +397,105 @@ export async function callback42(req: Request, res: Response) {
         });
     }
 }
+
+export async function login(req: Request, res: Response) {
+    const result = loginSchema.safeParse(req.body);
+
+    if (!result.success) {
+        return res.status(400).json({
+            error: "Invalid login data"
+        });
+    }
+
+    const { email, password } = result.data;
+
+    const user = await findUserByEmail(email);
+
+    if (!user || !user.passwordHash) {
+        return res.status(401).json({
+            error: "Invalid email or password"
+        });
+    }
+
+    const passwordValid = await argon2.verify(
+        user.passwordHash,
+        password
+    );
+
+    if (!passwordValid) {
+        return res.status(401).json({
+            error: "Invalid email or password"
+        });
+    }
+
+    await new Promise<void>((resolve, reject) => {
+        req.session.regenerate((error) => {
+            if (error) reject(error);
+            else resolve();
+        });
+    });
+
+    req.session.userId = user.id;
+
+    await new Promise<void>((resolve, reject) => {
+        req.session.save((error) => {
+            if (error) reject(error);
+            else resolve();
+        });
+    });
+
+    return res.status(200).json({
+        message: "Login successful",
+        user: {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            intraId: user.intraId,
+            avatarUrl: user.avatarUrl,
+            campus: user.campus,
+            points: user.points,
+            displayname: user.displayname,
+            location: user.location
+        }
+    });
+}
+
+export async function me(req: Request, res: Response) {
+    const userId = req.session.userId;
+
+    if (!userId) {
+        return res.status(401).json({
+            error: "Not authenticated"
+        });
+    }
+
+    const user = await findUserById(userId);
+
+    if (!user) {
+        return res.status(401).json({
+            error: "User not found"
+        });
+    }
+
+    return res.status(200).json({
+        user
+    });
+}
+
+export async function logout(req: Request, res: Response) {
+    await new Promise<void>((resolve, reject) => {
+        req.session.destroy((error) => {
+            if (error) reject(error);
+            else resolve();
+        });
+    });
+
+    res.clearCookie("ft.sid", {
+        path: "/"
+    });
+
+    return res.status(200).json({
+        message: "Logged out successfully"
+    });
+}
+

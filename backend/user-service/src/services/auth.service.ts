@@ -85,3 +85,22 @@ export async function deleteExpiredPendingRegistrations() {
         }
     });
 }
+
+export async function findUserById(id: number) {
+    return prisma.user.findUnique({
+        where: {
+            id
+        },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            intraId: true,
+            avatarUrl: true,
+            campus: true,
+            points: true,
+            displayname: true,
+            location: true
+        }
+    });
+}
