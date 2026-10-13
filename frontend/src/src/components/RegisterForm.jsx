@@ -32,13 +32,10 @@ export default function RegisterForm ()
             return;
         }
 
-        if (confirmpassword !== password) {
-            setError("Passwords do not match.");
-            return;
-        }
         const data = {
             email, 
-            password
+            password,
+            confirmpassword
         }
         setloading(true);
         try {
