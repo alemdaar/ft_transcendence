@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import hideIcon from '../assets/hide.svg'
+import showIcon from '../assets/show.svg'
 
 export default function RegisterForm ()
 {
@@ -10,7 +12,8 @@ export default function RegisterForm ()
     const [success, setsuccess] =  useState(false);
     const [loading, setloading] = useState(false);
     const navigate = useNavigate();
-
+    const [showpassword, setshowpassword] = useState(false);
+    const [showConfirmpassword, setshowConfirmpassword] = useState(false);
 
     const handleEmail = (e) => setemail(e.target.value);
     const handlePassword = (e) => setpassword(e.target.value);
@@ -108,10 +111,10 @@ export default function RegisterForm ()
             >
                 Password
             </label>
-
+        <div className="relative">
             <input
                 id="register-password"
-                type="password"
+                type={showpassword ? "text" : "password"}
                 placeholder="At least 8 characters"
                 value={password}
                 onChange={handlePassword}
@@ -119,6 +122,14 @@ export default function RegisterForm ()
                 required
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-green-800"
             />
+            <button
+                type="button"
+                onClick={() => setshowpassword(!showpassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+                <img src={showpassword ? hideIcon : showIcon} alt="" className="h-5 w-5" />
+            </button>
+        </div>
         </div>
 
         <div className="space-y-1.5">
@@ -128,10 +139,10 @@ export default function RegisterForm ()
             >
                 Confirm password
             </label>
-
+        <div className="relative">
             <input
                 id="register-confirm-password"
-                type="password"
+                type={showConfirmpassword ? "text" : "password"}
                 placeholder="Re-enter your password"
                 value={confirmpassword}
                 onChange={handleConfirmPassword}
@@ -139,6 +150,15 @@ export default function RegisterForm ()
                 required
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-green-800"
             />
+            <button 
+            type="button"
+            onClick={() => setshowConfirmpassword(!showConfirmpassword)} 
+            className="absolute right-3 top-1/2 -translate-y-1/2">
+                <img src={showConfirmpassword ? hideIcon : showIcon} alt=""
+                    className="h-5 w-5"
+                />
+            </button>
+        </div>
         </div>
 
         <button
@@ -152,29 +172,3 @@ export default function RegisterForm ()
     </form>
     );
 }
-// return(
-//     <form onSubmit={handleSubmit}>
-//         {error && <p>{error}</p>}
-//         {success && "signup successfully"}
-//         <input type="email" 
-//             placeholder="Enter Your Email Address"
-//             value={email}
-//             onChange={handleEmail}
-//         />
-//         <br />
-//         <input type="password" 
-//             placeholder="at least 6 characters"
-//             value={password}
-//             onChange={handlePassword}
-//         />
-//         <br />
-//         <input type="password" 
-//             placeholder="Confirm Your Password"
-//             value={confirmpassword}
-//             onChange={handleConfirmPassword}
-//         />
-//         <br />
-//         <button type="submit" disabled={loading}>
-//             {loading ? "Creating account..." : "Sign-up"}</button>
-//     </form>
-// )

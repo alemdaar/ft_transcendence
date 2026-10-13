@@ -1,6 +1,7 @@
 
 import LoginForm from "../components/LoginForm.jsx";
 import { Link } from "react-router-dom";
+import hat from '../assets/hat.svg'
 
 export default function Login() {
     return (
@@ -8,8 +9,8 @@ export default function Login() {
             <section className="w-full max-w-md rounded-2xl border border-green-100 bg-white p-8 shadow-lg shadow-green-900/5 transition-colors dark:border-green-800 dark:bg-green-900">
                 
                 <div className="mb-8 text-center">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-3xl dark:bg-green-800">
-                        🎓
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-3xl ">
+                        <img src={hat} alt="" />
                     </div>
 
                     <h1 className="text-3xl font-bold tracking-tight text-green-800 dark:text-green-50">

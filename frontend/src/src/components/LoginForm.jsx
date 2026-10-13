@@ -1,4 +1,6 @@
 import { useState } from "react"
+import hideIcon from '../assets/hide.svg'
+import showIcon from '../assets/show.svg'
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -6,7 +8,7 @@ export default function LoginForm() {
     const [error, setError] = useState("");
     const [loading, setLoading]  = useState(false);
     const [sucess, setSucess] = useState(false);
-
+    const [showPassword, setshowPassword] = useState(false);
 
 
     const handleChange = (e) => setEmail(e.target.value);
@@ -80,14 +82,20 @@ export default function LoginForm() {
             onChange={handleChange}
             className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
         />
-       
-        <input type="password" 
-            placeholder="Password"
-            value={password}
-            onChange={handlePass}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
-        />
-       
+        <div className="relative">
+            <input type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={handlePass}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
+            />
+            <button type="button"
+                onClick={() => setshowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+                <img src={showPassword ? hideIcon : showIcon} alt=""  className="h-5 w-5"/>
+            </button>
+        </div>
         <button type="submit" disabled={loading}
             className="mt-5 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-green-600 dark:hover:bg-green-500"
 
