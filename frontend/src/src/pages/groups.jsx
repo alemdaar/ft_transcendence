@@ -128,6 +128,8 @@ export default function Groups() {
                         Team</button>
                 <input type="text"
                         placeholder="Group name" 
+                        minLength={3}
+                        maxLength={30}
                         className="mt-4 w-full rounded-lg border p-3"
                         onChange={handleName}
                         required
