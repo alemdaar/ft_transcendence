@@ -6,19 +6,20 @@ import VerifyEmail from './pages/VerifyEmail.jsx';
 import { useState } from 'react';
 import sunIcon from './assets/dark.svg';
 import moonIcon from './assets/moon.svg';
+import Groups from './pages/groups.jsx'
+
 
 function Home()
 {
   return (
-    <div>
-      <Link to='/login'>
-      Login
-      </Link>
-      <br />
-      <Link to='/register'>
-      Sign-up
-      </Link>
-    </div>
+    <div className="flex min-h-screen items-center justify-center bg-green-50 dark:bg-black">
+      <div className="flex flex-col gap-4 rounded-xl border border-green-600 p-8 dark:border-green-800">
+        <Link to='/login'>Login</Link>
+        <Link to='/register'>Sign-up</Link>
+        <Link to='/groups'>Groups</Link>
+      </div>
+      </div>
+    
   )
 }
 export default function App() { 
@@ -47,6 +48,7 @@ export default function App() {
           <Route path='/login' element={<Login/>} />
           <Route path='/register' element={<Register/>} />
           <Route path='/verify-email' element={<VerifyEmail/>} />
+          <Route path='/groups' element={<Groups/>}/>
         </Routes>
       </BrowserRouter>
       </div>
