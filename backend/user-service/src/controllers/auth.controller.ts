@@ -22,7 +22,10 @@ import {
 } from "../services/auth.service";
 
 import { sendVerificationEmail } from "../services/email.service";
-import { get42UserByLogin } from "../services/fortytwo.service";
+import {
+    get42UserByLogin,
+    type FortyTwoUser
+} from "../services/fortytwo.service";
 
 export async function register(req: Request, res: Response) {
     const result = registerSchema.safeParse(req.body);
@@ -202,7 +205,26 @@ export async function verifyEmail(req: Request, res: Response) {
         }
     });
 }
-export function authorize42(req: Request, res: Response) {
+
+function saveSession(req: Request): Promise<void> {
+    return new Promise((resolve, reject) => {
+        req.session.save((error) => {
+            if (error) reject(error);
+            else resolve();
+        });
+    });
+}
+
+function regenerateSession(req: Request): Promise<void> {
+    return new Promise((resolve, reject) => {
+        req.session.regenerate((error) => {
+            if (error) reject(error);
+            else resolve();
+        });
+    });
+}
+
+export async function authorize42(req: Request, res: Response) {
     const clientId = process.env.FORTYTWO_CLIENT_ID;
     const redirectUri = process.env.FORTYTWO_REDIRECT_URI;
 
@@ -212,10 +234,18 @@ export function authorize42(req: Request, res: Response) {
         });
     }
 
+    const state = crypto.randomBytes(32).toString("hex");
+
+    req.session.oauthState = state;
+    req.session.oauthStateExpiresAt = Date.now() + 10 * 60 * 1000;
+
+    await saveSession(req);
+
     const params = new URLSearchParams({
         client_id: clientId,
         redirect_uri: redirectUri,
-        response_type: "code"
+        response_type: "code",
+        state
     });
 
     return res.redirect(
@@ -225,6 +255,28 @@ export function authorize42(req: Request, res: Response) {
 
 export async function callback42(req: Request, res: Response) {
     const code = req.query.code;
+    const state = req.query.state;
+
+    const expectedState = req.session.oauthState;
+    const stateExpiresAt = req.session.oauthStateExpiresAt;
+
+    if (
+        typeof state !== "string" ||
+        !expectedState ||
+        !stateExpiresAt ||
+        state !== expectedState ||
+        Date.now() >= stateExpiresAt
+    ) {
+        return res.status(400).json({
+            error: "Invalid or expired OAuth state"
+        });
+    }
+
+    // The OAuth state can only be used once.
+    delete req.session.oauthState;
+    delete req.session.oauthStateExpiresAt;
+
+    await saveSession(req);
 
     if (typeof code !== "string") {
         return res.status(400).json({
@@ -243,6 +295,7 @@ export async function callback42(req: Request, res: Response) {
     }
 
     try {
+        // 1. Exchange the authorization code for an access token.
         const tokenResponse = await fetch(
             "https://api.intra.42.fr/oauth/token",
             {
@@ -270,6 +323,13 @@ export async function callback42(req: Request, res: Response) {
             access_token: string;
         };
 
+        if (!tokenData.access_token) {
+            return res.status(401).json({
+                error: "Missing 42 access token"
+            });
+        }
+
+        // 2. Retrieve the authenticated student's 42 profile.
         const profileResponse = await fetch(
             "https://api.intra.42.fr/v2/me",
             {
@@ -280,117 +340,82 @@ export async function callback42(req: Request, res: Response) {
         );
 
         if (!profileResponse.ok) {
-            return res.status(401).json({
+            return res.status(502).json({
                 error: "Failed to retrieve 42 profile"
             });
         }
 
-        const profile = await profileResponse.json() as {
-            id: number;
-            login: string;
-            email: string;
-            displayname: string;
-            location: string | null;
+        const profile = await profileResponse.json() as FortyTwoUser;
 
-            image?: {
-                link?: string;
-            };
-
-            campus?: {
-                id: number;
-                name: string;
-                time_zone: string;
-            }[];
-
-            campus_users?: {
-                id: number;
-                user_id: number;
-                campus_id: number;
-                is_primary: boolean;
-            }[];
-        };
-
-        /*
-         * Find which campus is marked as primary.
-         *
-         * Example:
-         * campus_users:
-         *   campus_id 16 → is_primary false
-         *   campus_id 55 → is_primary true
-         *
-         * primaryCampusId = 55
-         */
-        const primaryCampusId =
-            profile.campus_users?.find(
-                campusUser => campusUser.is_primary
-            )?.campus_id;
-
-        /*
-         * Use the primary campus ID to find its name.
-         *
-         * campus id 55 → "Tétouan"
-         */
-        const campus =
-            profile.campus?.find(
-                campus => campus.id === primaryCampusId
-            )?.name
-            ?? profile.campus?.[0]?.name
-            ?? "1337";
-
-        const existingUser = await findUserByIntraId(profile.id);
-
-        if (existingUser) {
-            return res.status(200).json({
-                message: "42 account already registered",
-                user: {
-                    id: existingUser.id,
-                    email: existingUser.email,
-                    username: existingUser.username,
-                    intraId: existingUser.intraId,
-                    avatarUrl: existingUser.avatarUrl,
-                    campus: existingUser.campus,
-                    points: existingUser.points,
-                    displayname: existingUser.displayname,
-                    location: existingUser.location
-                }
+        if (
+            typeof profile.id !== "number" ||
+            typeof profile.login !== "string" ||
+            typeof profile.email !== "string"
+        ) {
+            return res.status(502).json({
+                error: "Invalid 42 profile data"
             });
         }
 
-        const existingEmail = await findUserByEmail(profile.email);
+        const email = profile.email.toLowerCase();
 
-        if (existingEmail) {
-            return res.status(409).json({
-                error: "An account with this email already exists"
+        // 3. Restrict this platform to 1337 student emails.
+        if (!email.endsWith("@student.1337.ma")) {
+            return res.status(403).json({
+                error: "Only 1337 student accounts are allowed"
             });
         }
 
-        const user = await createUser({
-            email: profile.email,
-            passwordHash: null,
-            username: profile.login,
-            displayname: profile.displayname,
-            location: profile.location,
-            intraId: profile.id,
-            avatarUrl: profile.image?.link,
-            campus
-        });
+        // 4. Find the user by their unique 42 identity.
+        let user = await findUserByIntraId(profile.id);
 
-        return res.status(201).json({
-            message: "Account created successfully with 42",
-            user: {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                intraId: user.intraId,
-                avatarUrl: user.avatarUrl,
-                campus: user.campus,
-                points: user.points,
-                displayname: user.displayname,
-                location: user.location
+        if (!user) {
+            // Reject conflicting identities.
+            const existingEmail = await findUserByEmail(email);
+
+            if (existingEmail) {
+                return res.status(409).json({
+                    error: "This email belongs to another 42 identity"
+                });
             }
-        });
+
+            // 5. New student: create an account.
+            const primaryCampusId =
+                profile.campus_users?.find(
+                    campusUser => campusUser.is_primary
+                )?.campus_id;
+
+            const campus =
+                profile.campus?.find(
+                    campus => campus.id === primaryCampusId
+                )?.name
+                ?? profile.campus?.[0]?.name
+                ?? "1337";
+
+            user = await createUser({
+                email,
+                passwordHash: null,
+                username: profile.login,
+                intraId: profile.id,
+                avatarUrl: profile.image?.link,
+                campus,
+                displayname: profile.displayname,
+                location: profile.location
+            });
+        }
+
+        // 6. Create a fresh authenticated session.
+        await regenerateSession(req);
+
+        req.session.userId = user.id;
+
+        await saveSession(req);
+
+        // 7. Return the student to the frontend.
+        return res.redirect(302, "/");
+
     } catch (error) {
-        console.error(error);
+        console.error("42 OAuth error:", error);
 
         return res.status(500).json({
             error: "42 authentication failed"
