@@ -1,0 +1,10 @@
+curl -X POST "http://localhost:8080/api/your-endpoint" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "topic": "Web Development",
+    "description": "Introduction to modern web development",
+    "campus": "Main Campus",
+    "mode": "Online",
+    "status": "active"
+  }'
