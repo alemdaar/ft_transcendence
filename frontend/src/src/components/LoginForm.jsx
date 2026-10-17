@@ -64,13 +64,13 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-            <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
+            <p className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">
                 {error}
             </p>
         )}
 
         {sucess && (
-            <p className="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+            <p className="mb-4 rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/50 dark:text-teal-300">
                 Login successful!
             </p>
         )}
@@ -80,24 +80,24 @@ export default function LoginForm() {
             placeholder="Enter your email"
             value={email}
             onChange={handleChange}
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
+            className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
         />
         <div className="relative">
             <input type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={handlePass}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:focus:ring-green-800"
+                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
             />
             <button type="button"
                 onClick={() => setshowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700"
             >
-                <img src={showPassword ? hideIcon : showIcon} alt=""  className="h-5 w-5"/>
+                <img src={showPassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90"/>
             </button>
         </div>
         <button type="submit" disabled={loading}
-            className="mt-5 w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-green-600 dark:hover:bg-green-500"
+            className="mt-5 w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
 
         >
             {loading ? "login in.." : "Login"}</button>

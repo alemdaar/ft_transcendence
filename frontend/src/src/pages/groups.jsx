@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 export default function Groups() {
@@ -58,16 +57,16 @@ export default function Groups() {
     }
 
     return (
-    <main className="flex min-h-screen w-full flex-col gap-8 bg-green-50 px-4 py-8 sm:px-6 dark:bg-black">
+    <main className="flex min-h-screen w-full flex-col gap-8 bg-zinc-50 px-4 py-12 transition-colors duration-300 sm:px-8 dark:bg-zinc-950">
 
         {/* Header */}
-        <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-green-800 dark:text-white">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1.5">
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
             Groups
             </h1>
 
-            <p className="text-gray-600 dark:text-white">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Discover and join your groups and teams.
             </p>
         </div>
@@ -75,20 +74,20 @@ export default function Groups() {
         <button
             type="button"
             onClick={() => setshowForm(true)}
-            className="rounded-lg bg-green-700 px-4 py-2 text-white hover:bg-green-800"
+            className="rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-950"
         >
             Create
         </button>
         </div>
 
         {/* Groups list */}
-        <section className="w-full">
-        <h2 className="mb-4 text-xl font-semibold text-green-800 dark:text-white">
+        <section className="mx-auto w-full max-w-5xl">
+        <h2 className="mb-4 text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
             Your Groups
         </h2>
 
-        <div className="rounded-xl border border-green-200 bg-white p-6 dark:border-green-800 dark:bg-green-950">
-            <p className="text-gray-500 dark:text-gray-300">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
             You haven't joined any groups yet.
             </p>
         </div>
@@ -96,47 +95,53 @@ export default function Groups() {
 
         {/* Popup */}
         {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-4 shadow-xl sm:p-6 dark:bg-green-950">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 backdrop-blur-sm">
+            <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl sm:p-8 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/60">
 
-            <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-green-800 dark:text-white">
+            <div className="mb-6 flex items-center justify-between border-b border-zinc-100 pb-4 dark:border-zinc-800">
+                <h2 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                 Create a group
                 </h2>
 
                 <button
                 type="button"
                 onClick={() => setshowForm(false)}
-                className="rounded-lg px-3 py-1 text-gray-600 hover:bg-gray-100 dark:text-white dark:hover:bg-green-900"
+                className="rounded-lg px-3 py-1.5 text-sm font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                 >
                 Close
                 </button>
             </div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                {error && <p className="text-red-500">{error}</p> }
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+                {error && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">{error}</p> }
                 <button type="button"
                         onClick={() => setType("general")}
-                        className={`rounded-xl border p-6 ${
-                            type === "general" ? "border-green-600 bg-green-100" : ""}`}
+                        className={`rounded-xl border p-4 text-sm font-semibold transition-all ${
+                            type === "general"
+                                ? "border-teal-600 bg-teal-50/80 text-teal-800 ring-2 ring-teal-600/20 dark:border-teal-500 dark:bg-teal-950/50 dark:text-teal-300 dark:ring-teal-500/20"
+                                : "border-zinc-200 bg-zinc-50/50 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100/70 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
+                        }`}
                         >
                         General</button>
                 <button type="button"
                         onClick={() => setType("team")}
-                        className={`rounded-xl border p-6 ${
-                            type === "team" ? "border-green-600 bg-green-100" : ""}`}
+                        className={`rounded-xl border p-4 text-sm font-semibold transition-all ${
+                            type === "team"
+                                ? "border-teal-600 bg-teal-50/80 text-teal-800 ring-2 ring-teal-600/20 dark:border-teal-500 dark:bg-teal-950/50 dark:text-teal-300 dark:ring-teal-500/20"
+                                : "border-zinc-200 bg-zinc-50/50 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100/70 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
+                        }`}
                         >
                         Team</button>
                 <input type="text"
                         placeholder="Group name" 
                         minLength={3}
                         maxLength={30}
-                        className="mt-4 w-full rounded-lg border p-3"
+                        className="mt-1 w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
                         onChange={handleName}
                         required
                         />
                 <input type="text"
                         placeholder="Description" 
-                        className="mt-4 w-full rounded-lg border p-3"
+                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
                         onChange={handleDesc}
                         required
                         />
@@ -146,10 +151,10 @@ export default function Groups() {
                                 placeholder="Member Limit" 
                                 onChange={handleNumMember}
                                 required
-                                className="mt-4 w-full rounded-lg border p-3"/>
+                                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"/>
                     )
                 }
-                <button className="rounded-lg bg-green-700 px-4 py-2 text-white hover:bg-green-800"
+                <button className="mt-2 w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
                     type="submit"
                     disabled={loading}
                 >{loading ? "Creating..." : "Create"}</button>

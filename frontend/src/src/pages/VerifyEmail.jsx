@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 
@@ -53,27 +51,52 @@ export default function VerifyEmail() {
             setloading(false);
         }
     };
+    const handleResend = async (e) => {
+        e.preventDefault();
+        if (!email) {
+            seterror("Email is missing. Please register again.");
+            return;
+        }
+        seterror("");
+        setsuccess("");
+        setloading(true);
+        try {
+            const response = await fetch ('/auth/resend-code', {
+                method: 'POST', 
+                headers :{
+                    "content-type" : "application/json"
+                }, 
+                body: JSON.stringify({ email })
+            })
+            const resulte = await response.json();
+            if (!response.ok)
+                seterror(resulte.message);
+            else
+                setsuccess("code resend seccessfully check your email");
+
+        } catch (error) {
+            seterror("can't connect to server");
+        }
+        finally { setloading(false)}
+    }
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-green-50 px-4 py-16 transition-colors dark:bg-green-950">
-            <section className="w-full max-w-md rounded-2xl border border-green-100 bg-white p-8 shadow-lg shadow-green-900/5 transition-colors dark:border-green-800 dark:bg-green-900">
+        <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-16 transition-colors duration-300 dark:bg-zinc-950">
+            <section className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-lg shadow-zinc-900/5 transition-colors duration-300 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/40">
 
                 <div className="mb-8 text-center">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-3xl dark:bg-green-800">
-                        ✉️
-                    </div>
 
-                    <h1 className="text-3xl font-bold tracking-tight text-green-800 dark:text-green-50">
+                    <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                         Verify Your Email
                     </h1>
 
-                    <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-green-100/70">
+                    <p className="mt-3 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
                         We've sent a verification code to your email.
                         Enter the code below to activate your account.
                     </p>
 
                     {email && (
-                        <p className="mt-2 break-all text-sm font-medium text-green-700 dark:text-green-300">
+                        <p className="mt-2 break-all text-sm font-medium text-teal-600 dark:text-teal-400">
                             {email}
                         </p>
                     )}
@@ -83,7 +106,7 @@ export default function VerifyEmail() {
                     {error && (
                         <p
                             role="alert"
-                            className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+                            className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300"
                         >
                             {error}
                         </p>
@@ -92,7 +115,7 @@ export default function VerifyEmail() {
                     {success && (
                         <p
                             role="status"
-                            className="rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-300"
+                            className="rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/50 dark:text-teal-300"
                         >
                             {success}
                         </p>
@@ -101,11 +124,11 @@ export default function VerifyEmail() {
                     <div className="space-y-1.5">
                         <label
                             htmlFor="verification-code"
-                            className="block text-sm font-medium text-gray-700 dark:text-green-100"
+                            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
                         >
                             Verification code
                         </label>
-
+                        
                         <input
                             id="verification-code"
                             type="text"
@@ -114,29 +137,41 @@ export default function VerifyEmail() {
                             onChange={(e) => setcode(e.target.value)}
                             autoComplete="one-time-code"
                             required
-                            className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-center tracking-widest text-gray-900 outline-none transition placeholder:tracking-normal focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-green-800"
+                            className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-center text-sm font-semibold tracking-widest text-zinc-900 outline-none transition placeholder:font-normal placeholder:tracking-normal placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-green-600 dark:hover:bg-green-500"
+                        className="cursor-pointer w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
                     >
                         {loading ? "Verifying..." : "Verify email"}
                     </button>
+                    {/* Resend code */}
+                        
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        didn't recive?
+                        <button 
+                        type="button" 
+                        disabled={loading} 
+                        onClick={handleResend} 
+                        className="cursor-pointer font-semibold text-teal-600 transition hover:text-teal-700 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-teal-400 dark:hover:text-teal-300">
 
-                    <p className="text-center text-sm text-gray-600 dark:text-green-100/80">
+                        Resend</button></p>
+
+
+                    {/* end here */}
+                    <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
                         Wrong email?{" "}
                         <Link
                             to="/register"
-                            className="font-semibold text-green-700 hover:underline dark:text-green-300"
+                            className="cursor-pointer font-semibold text-teal-600 hover:text-teal-700 hover:underline dark:text-teal-400 dark:hover:text-teal-300"
                         >
                             Register again
                         </Link>
                     </p>
                 </form>
             </section>
-        </main>
-    );
+        </main>)
 }
