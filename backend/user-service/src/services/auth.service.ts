@@ -1,0 +1,106 @@
+import { prisma } from "../lib/prisma";
+
+export async function createPendingRegistration(data: {
+    email: string;
+    passwordHash: string;
+    code: string;
+    expiresAt: Date;
+}) {
+    return prisma.pendingRegistration.upsert({
+        where: {
+            email: data.email
+        },
+        update: {
+            passwordHash: data.passwordHash,
+            code: data.code,
+            expiresAt: data.expiresAt
+        },
+        create: data
+    });
+}
+
+export async function findPendingRegistration(email: string) {
+    return prisma.pendingRegistration.findUnique({
+        where: {
+            email
+        }
+    });
+}
+
+export async function deletePendingRegistration(email: string) {
+    return prisma.pendingRegistration.delete({
+        where: {
+            email
+        }
+    });
+}
+
+export async function findUserByEmail(email: string) {
+    return prisma.user.findUnique({
+        where: {
+            email
+        }
+    });
+}
+
+export async function findUserByIntraId(intraId: number) {
+    return prisma.user.findUnique({
+        where: {
+            intraId
+        }
+    });
+}
+
+export async function createUser(data: {
+    email: string;
+    passwordHash?: string | null;
+    username: string;
+    intraId: number;
+    avatarUrl?: string;
+    campus: string;
+    displayname?: string | null;
+    location?: string | null;
+}) {
+    return prisma.user.create({
+        data: {
+            email: data.email,
+            passwordHash: data.passwordHash ?? null,
+            username: data.username,
+            intraId: data.intraId,
+            avatarUrl: data.avatarUrl,
+            campus: data.campus,
+            displayname: data.displayname ?? null,
+            location: data.location ?? null
+        }
+    });
+}
+export async function deleteExpiredPendingRegistrations() {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    return prisma.pendingRegistration.deleteMany({
+        where: {
+            expiresAt: {
+                lt: cutoff
+            }
+        }
+    });
+}
+
+export async function findUserById(id: number) {
+    return prisma.user.findUnique({
+        where: {
+            id
+        },
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            intraId: true,
+            avatarUrl: true,
+            campus: true,
+            points: true,
+            displayname: true,
+            location: true
+        }
+    });
+}
