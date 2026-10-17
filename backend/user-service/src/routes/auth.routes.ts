@@ -8,7 +8,8 @@ import {
     callback42,
     login,
     me,
-    logout
+    logout,
+    issueAccessToken
 } from "../controllers/auth.controller";
 
 import {
@@ -56,6 +57,12 @@ authRouter.post(
     "/logout",
     requireAuth,
     logout
+);
+
+authRouter.post(
+    "/token",
+    requireAuth,
+    issueAccessToken
 );
 
 authRouter.get("/42", authorize42);

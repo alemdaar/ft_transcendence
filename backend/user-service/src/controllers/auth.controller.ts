@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import argon2 from "argon2";
 import crypto from "node:crypto";
 import { z } from "zod";
+import { generateAccessToken } from "../services/jwt.service";
 
 
 import {
@@ -524,3 +525,20 @@ export async function logout(req: Request, res: Response) {
     });
 }
 
+export function issueAccessToken(req: Request, res: Response) {
+    const userId = req.session.userId;
+
+    if (!userId) {
+        return res.status(401).json({
+            error: "Not authenticated"
+        });
+    }
+
+    const token = generateAccessToken(userId);
+
+    return res.status(200).json({
+        accessToken: token,
+        tokenType: "Bearer",
+        expiresIn: 900
+    });
+}
