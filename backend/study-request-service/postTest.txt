@@ -8,3 +8,13 @@ curl -X POST "http://localhost:8080/api/your-endpoint" \
     "mode": "Online",
     "status": "active"
   }'
+
+
+  curl -X POST "http://localhost:3000/request-peer/34/claim" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIwMCIsImlhdCI6MTUxNjIzOTAyMn0.jR6FhnmYf3wTMTyIbRQDvQLXk1-mt-LUW9VrfUzCA2s" \
+  -d '{
+    "specificSpot": "library hda ktoba",
+    "meetTime": "4:00"
+  }'

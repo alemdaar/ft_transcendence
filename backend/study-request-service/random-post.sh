@@ -47,7 +47,7 @@ status=$(random_item "${statuses[@]}")
 curl -X POST "$URL" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
-  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE3OTIwNjE1ODAiLCJpYXQiOjE1MTYyMzkwMjJ9.mmGmJE202OJh7D43YiDIq-f51h4e00alEVHW3cURF9E" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE5OCIsImlhdCI6MTUxNjIzOTAyMn0.VydxFhLup7-DJKW0fL5GccTaVGB3h6MfXlCpuof7kqw" \
   -d "$(jq -n \
     --arg topic "$topic" \
     --arg description "$description" \

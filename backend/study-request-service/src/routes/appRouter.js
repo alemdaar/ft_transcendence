@@ -1,5 +1,5 @@
 import express from 'express'
-import {studyReq} from '../controllers/CreateReq.js'
+import {studyReq, claimRequest} from '../controllers/CreateReq.js'
 import {testServer, getAllRequests, RequestId } from '../controllers/GetRequest.js'
 import { validateStudySchema} from '../validators/request.validator.js'
 import { validate } from '../middleware/validateRequest.js'

@@ -7,24 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model StudentRequest {
-  id          Int        @id @default(autoincrement())
-  asker_id    Int
-  helper_id   Int?       // Nullable
-  topic       String        @db.VarChar(255)
-  description String        @db.VarChar(255)
-  mode        RequestMode
-  status      RequestStatus @default(open)
-  campus      campusField?
-  created_at  DateTime      @db.Timestamptz(0)
-  updated_at  DateTime      @db.Timestamptz(0) @updatedAt
-
-  meetup      SessionMeetup?
-  messages    SessionMessage[]
-
-  @@map("students-request")
-}
-
 enum RequestMode {
   online
   insite
@@ -38,9 +20,29 @@ enum campusField {
 enum RequestStatus {
   open
   claimed
+  pending
   completed
   cancelled
 }
+
+model StudentRequest {
+  id          Int        @id @default(autoincrement())
+  asker_id    Int
+  helper_id   Int?       // Nullable
+  topic       String        @db.VarChar(100)
+  description String        @db.VarChar(255)
+  mode        RequestMode
+  status      RequestStatus @default(open)
+  campus      campusField?
+  created_at  DateTime      @db.Timestamptz(0)
+  updated_at  DateTime      @db.Timestamptz(0) @updatedAt
+
+  meetup      SessionMeetup?
+  messages    SessionMessage[]
+
+  @@map("students-request")
+}
+
 
 model SessionMeetup {
   id             Int   @id @default(autoincrement())
@@ -49,7 +51,8 @@ model SessionMeetup {
   request_id     Int   @unique
   request        StudentRequest @relation(fields: [request_id], references: [id], onDelete: Cascade)
   
-  plan_spot      String   @db.VarChar(100)
+  specificSpot   String   @db.VarChar(100)
+  meetTime       DateTime @db.Time(0)
   asker_on_way   Boolean  @default(false)
   asker_arrived  Boolean  @default(false)
   helper_on_way  Boolean  @default(false)

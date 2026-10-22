@@ -6,6 +6,7 @@ export const testServer = (req, res) => {
 }
 
 export const getAllRequests = async (req, res) => {
+// can throw errors if the database is unavailable or the query fails.
   try {
     const allPost = await prisma.studentRequest.findMany({
       where : {status: 'open', asker_id: {not: req.user.id}},
@@ -21,10 +22,13 @@ export const getAllRequests = async (req, res) => {
 }
 
 export const RequestId = async (req, res) => {
+  // can throw errors if the database is unavailable or the query fails.
   try {
     const oneRequest = await prisma.studentRequest.findUnique({
       where: {id: Number(req.params.id), asker_id: {not: req.user.id}}
     })
+    if (!oneRequest)
+      return res.status(404).json({error: 'Study request post not found'})
     res.status(200).json({oneRequest})
     console.log('getting the detailed post', oneRequest)
   } catch(err) {
