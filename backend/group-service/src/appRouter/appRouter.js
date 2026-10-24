@@ -1,4 +1,5 @@
 import Router from 'express';
+import {db} from '../db.js'
 import { healthcheck } from '../controller/healthcheck.js'
 import { createGroup } from '../controller/createGroup.js'
 import { getGroups } from '../controller/getGroups.js'
@@ -16,3 +17,14 @@ appRouter.post('/groups', validate(GroupSchema), createGroup)
 appRouter.get('/groups', getGroups)
 appRouter.get('/groups/:id', getOneGroup)
 appRouter.delete('/groups/:id', deleteGroup)
+
+// appRouter.delete('/groups', async () => {
+//   try {
+//     // Send a raw SQL command directly to PostgreSQL
+//     await db.$executeRawUnsafe('TRUNCATE TABLE "Group" RESTART IDENTITY CASCADE;');
+    
+//     console.log("All groups, members, messages, and requests have been wiped. IDs reset to 1.");
+//   } catch (error) {
+//     console.error("Error resetting tables:", error);
+//   }
+// })

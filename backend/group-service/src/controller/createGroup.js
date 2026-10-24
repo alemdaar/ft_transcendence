@@ -2,7 +2,8 @@ import { db } from '../db.js'
 
 export const createGroup = async (req, res)=>{
 	const {name, type, description, memberLimit} = req.body
-	
+	const tokenID = Number(req.user.subject)
+	const userCampus = req.user.campus
 	try {
 		const group = await db.group.create({
 			data:
@@ -10,9 +11,18 @@ export const createGroup = async (req, res)=>{
 				name: name,
 				type: type,
 				description: description,
-				campus: req.user.campus,
+				campus: userCampus,
 				memberLimit: memberLimit,
-				ownerID: Number(req.user.subject)
+				ownerID: tokenID,
+				members: {
+					create: {
+						userID: tokenID,
+						role: "OWNER"
+					}
+				}
+			},
+			omit: {
+				ownerID: true
 			}
 		})
 		console.log("group created:\n", group)
