@@ -1,8 +1,8 @@
 import express from 'express'
 import {studyReq, claimRequest} from '../controllers/CreateReq.js'
 import {testServer, getAllRequests, RequestId } from '../controllers/GetRequest.js'
-import { validateStudySchema} from '../validators/request.validator.js'
-import { validate } from '../middleware/validateRequest.js'
+import { validateStudySchema, paramIdObj} from '../validators/request.validator.js'
+import { validate, validateParamId } from '../middleware/validateRequest.js'
 import { authUser } from '../middleware/auth.js'
 
 export const routeMe = express.Router()
@@ -14,10 +14,11 @@ routeMe.use(authUser)
 
 routeMe.post('/request-peer', validate(validateStudySchema), studyReq)
 
-routeMe.post('/request-peer/:id/claim', claimRequest)
+routeMe.post('/request-peer/:id/claim', validateParamId(paramIdObj), claimRequest)
+
 
 routeMe.get('/', testServer)
 
 routeMe.get('/request-peer', getAllRequests)
 
-routeMe.get('/request-peer/:id', RequestId)
+routeMe.get('/request-peer/:id', validateParamId(paramIdObj), RequestId)

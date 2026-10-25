@@ -4,14 +4,13 @@ export const studyReq = async (req, res) => {
 
   try {
 	
-	const {topic, description, mode, status} = req.body;
+	const {topic, description, mode} = req.body;
 	const newRequest = await prisma.studentRequest.create({
 		data: {
 		  asker_id: req.user.id,
 		  topic: topic,
 		  description: description,
 		  mode: mode,
-		  status: status,
 		  campus: req.user.campus,
 		  created_at: new Date(),
 		  updated_at: new Date()
@@ -29,8 +28,10 @@ export const studyReq = async (req, res) => {
 export const claimRequest = async (req, res) => {
   
 try {
+	// if (!(/^[1-9]\d*$/.test(req.params.id)) || Number(req.params.id) > 2147483647)
+	// 	throw new Error('Invalid Id')
 	const updatedResult = await prisma.$transaction(async (tx) => {
-		
+
 		const targetReq = await tx.studentRequest.findUnique({
 			where: { id: Number(req.params.id)}
 		})
@@ -67,6 +68,7 @@ try {
 	console.log('CLAIMED', updatedResult)
 	return res.status(200).json({message: 'request claimed', updatedResult})
 } catch (err) {
+	console.log('Error', err.message)
    	res.status(400).json({error: err.message})
 }
 

@@ -19,3 +19,16 @@ export const validate = (schemaObj) => {
     
 }
 
+export const validateParamId = (schemaObj) => {
+    
+    return function(req, res, next)
+    {
+        const result = schemaObj.safeParse(req.params);
+        if (!result.success)
+            return res.status(400).json({ error: 'invalid id' });
+        console.log('succes')
+        req.params = result.data;
+        next();
+    }
+    
+}

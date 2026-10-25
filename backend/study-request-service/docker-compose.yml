@@ -1,16 +1,18 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:15
     container_name: studyreq-db
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: study_hub
-    volumes:
-      - db-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    volumes:
+      - study-request-service_db-data:/var/lib/postgresql/data
+
 volumes:
-  db-data:
+  study-request-service_db-data:
+    external: true
+

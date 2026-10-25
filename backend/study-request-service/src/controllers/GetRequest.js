@@ -24,15 +24,17 @@ export const getAllRequests = async (req, res) => {
 export const RequestId = async (req, res) => {
   // can throw errors if the database is unavailable or the query fails.
   try {
+    // if (!(/^[1-9]\d*$/.test(req.params.id)) || Number(req.params.id) > 2147483647)
+		//   return  res.status(404).json({error: 'Invalid Id'})
     const oneRequest = await prisma.studentRequest.findUnique({
-      where: {id: Number(req.params.id), asker_id: {not: req.user.id}}
+      where: {id: Number(req.params.id), asker_id: {not: req.user.id}, status: 'open'}
     })
     if (!oneRequest)
-      return res.status(404).json({error: 'Study request post not found'})
+      return res.status(404).json({error: 'post not found or not allowed'})
     res.status(200).json({oneRequest})
     console.log('getting the detailed post', oneRequest)
   } catch(err) {
-    console.log('error fetching the post: ', err);
+    console.log('error fetching the post: ', err.message);
     res.status(500).json({ error: 'Failed to retrieve the post'})
   }
 }
