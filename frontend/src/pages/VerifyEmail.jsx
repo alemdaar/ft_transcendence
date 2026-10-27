@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 
@@ -11,6 +11,13 @@ export default function VerifyEmail() {
     const [error, seterror] = useState("");
     const [success, setsuccess] = useState("");
     const [loading, setloading] = useState(false);
+    const [coolDown, setCoolDown] = useState(email ? 60 : 0);
+
+    useEffect(() => {
+        if (coolDown <= 0) return;
+        const timer = setTimeout(() => setCoolDown((c) => c - 1 ), 1000);
+        return () => clearTimeout(timer);
+    }, coolDown);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -55,6 +62,8 @@ export default function VerifyEmail() {
     };
     const handleResend = async (e) => {
         e.preventDefault();
+
+        if (coolDown > 0) return ;
         if (!email) {
             seterror("Email is missing. Please register again.");
             return;
@@ -71,10 +80,15 @@ export default function VerifyEmail() {
                 body: JSON.stringify({ email })
             })
             const resulte = await response.json();
-            if (!response.ok)
-                seterror(resulte.error || resulte.message || "Unable to resend code. Please try again.");
+            if (response.status === 429)
+                setCoolDown(resulte.retryAfter || 60);
+            else if (!response.ok)
+                seterror(resulte.message);
             else
+            {
                 setsuccess("code resend seccessfully check your email");
+                setCoolDown(60);
+            }
 
         } catch (error) {
             seterror("can't connect to server");
@@ -145,20 +159,25 @@ export default function VerifyEmail() {
 
                     <Button
                         type="submit"
-                        disabled={loading} >
+                        disabled={loading} 
+                        className="w-full"
+                        >
                         {loading ? "Verifying..." : "Verify email"}
+                        
                     </Button>
                     {/* Resend code */}
                         
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        didn't recive?
-                        <button 
-                        type="button" 
-                        disabled={loading} 
-                        onClick={handleResend} 
-                        className="cursor-pointer font-semibold text-teal-600 transition hover:text-teal-700 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-teal-400 dark:hover:text-teal-300">
-
-                        Resend</button></p>
+                        Didn't receive it?{" "}
+                        <button
+                            type="button"
+                            disabled={loading || coolDown > 0}
+                            onClick={handleResend}
+                            className="cursor-pointer font-semibold text-teal-600 transition hover:text-teal-700 hover:underline disabled:cursor-not-allowed disabled:opacity-50 disabled:no-underline dark:text-teal-400 dark:hover:text-teal-300"
+                        >
+                            {coolDown > 0 ? `Resend in ${coolDown}s` : "Resend"}
+                        </button>
+                    </p>
 
 
                     {/* end here */}
