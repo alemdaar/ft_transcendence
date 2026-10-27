@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import hideIcon from '../assets/hide.svg'
-import showIcon from '../assets/show.svg'
+import hideIcon from '../../assets/hide.svg'
+import showIcon from '../../assets/show.svg'
+import Button from "../ui/Button";
 
 export default function RegisterForm ()
 {
@@ -129,6 +130,7 @@ export default function RegisterForm ()
             >
                 <img src={showpassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90" />
             </button>
+            
         </div>
         </div>
 

@@ -1,4 +1,4 @@
-import RegisterForm from "../components/RegisterForm.jsx";
+import RegisterForm from "../components/auth/RegisterForm.jsx";
 import { Link } from "react-router-dom";
 import hat from '../assets/hat.svg'
 

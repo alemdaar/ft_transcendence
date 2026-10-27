@@ -1,12 +1,13 @@
-import Login from './pages/login.jsx'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
-import { Link } from 'react-router-dom';
+import Groups from './pages/Groups.jsx'
 import VerifyEmail from './pages/VerifyEmail.jsx';
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import sunIcon from './assets/dark.svg';
 import moonIcon from './assets/moon.svg';
-import Groups from './pages/groups.jsx'
 
 
 function Home()

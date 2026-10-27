@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "../components/ui/Button.jsx";
 
 export default function Groups() {
     const [showForm, setshowForm] = useState(false);
@@ -71,13 +72,10 @@ export default function Groups() {
             </p>
         </div>
 
-        <button
+        <Button
             type="button"
-            onClick={() => setshowForm(true)}
-            className="rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-950"
-        >
-            Create
-        </button>
+            onClick={() => setshowForm(true)}> 
+            Create</Button>
         </div>
 
         {/* Groups list */}
@@ -103,17 +101,17 @@ export default function Groups() {
                 Create a group
                 </h2>
 
-                <button
+                <Button
                 type="button"
                 onClick={() => setshowForm(false)}
-                className="rounded-lg px-3 py-1.5 text-sm font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                variant="secondary"
                 >
                 Close
-                </button>
+                </Button>
             </div>
             <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
                 {error && <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">{error}</p> }
-                <button type="button"
+                <Button type="button"
                         onClick={() => setType("general")}
                         className={`rounded-xl border p-4 text-sm font-semibold transition-all ${
                             type === "general"
@@ -121,8 +119,8 @@ export default function Groups() {
                                 : "border-zinc-200 bg-zinc-50/50 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100/70 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
                         }`}
                         >
-                        General</button>
-                <button type="button"
+                        General</Button>
+                <Button type="button"
                         onClick={() => setType("team")}
                         className={`rounded-xl border p-4 text-sm font-semibold transition-all ${
                             type === "team"
@@ -130,7 +128,7 @@ export default function Groups() {
                                 : "border-zinc-200 bg-zinc-50/50 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100/70 dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-zinc-600 dark:hover:bg-zinc-800"
                         }`}
                         >
-                        Team</button>
+                        Team</Button>
                 <input type="text"
                         placeholder="Group name" 
                         minLength={3}
@@ -154,10 +152,10 @@ export default function Groups() {
                                 className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"/>
                     )
                 }
-                <button className="mt-2 w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
+                <Button className="mt-2 w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
                     type="submit"
                     disabled={loading}
-                >{loading ? "Creating..." : "Create"}</button>
+                >{loading ? "Creating..." : "Create"}</Button>
             </form>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import LoginForm from "../components/LoginForm.jsx";
+import LoginForm from "../components/auth/LoginForm.jsx";
 import { Link } from "react-router-dom";
 import hat from '../assets/hat.svg'
 

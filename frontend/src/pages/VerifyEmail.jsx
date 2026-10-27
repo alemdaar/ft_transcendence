@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+import Button from "../components/ui/Button";
+
 
 export default function VerifyEmail() {
     const [code, setcode] = useState("");
@@ -141,13 +143,11 @@ export default function VerifyEmail() {
                         />
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
-                        disabled={loading}
-                        className="cursor-pointer w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
-                    >
+                        disabled={loading} >
                         {loading ? "Verifying..." : "Verify email"}
-                    </button>
+                    </Button>
                     {/* Resend code */}
                         
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">

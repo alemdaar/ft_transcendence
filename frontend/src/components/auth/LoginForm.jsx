@@ -1,6 +1,7 @@
 import { useState } from "react"
-import hideIcon from '../assets/hide.svg'
-import showIcon from '../assets/show.svg'
+import hideIcon from '../../assets/hide.svg'
+import showIcon from '../../assets/show.svg'
+import Button from "../ui/Button";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -18,15 +19,20 @@ export default function LoginForm() {
         e.preventDefault();
         setSucess(false);
         setError("");
-        if (password.length < 8)
+        if (!email && !password)
         {
-            setError("Password should contain at least 8 characters");
-            return ;
+            setError("Please enter email and password");
+                return;
         }
         if (!email.includes('@'))
         {
             setError("Please include '@' in email Address");
                 return;
+        }
+        if (password.length < 8)
+        {
+            setError("Password should contain at least 8 characters");
+            return ;
         }
         let data = {
             email, 
@@ -96,11 +102,9 @@ export default function LoginForm() {
                 <img src={showPassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90"/>
             </button>
         </div>
-        <button type="submit" disabled={loading}
-            className="mt-5 w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
-
+        <Button type="submit" disabled={loading} className="w-full"
         >
-            {loading ? "login in.." : "Login"}</button>
+            {loading ? "login in.." : "Login"}</Button>
     </form>
   )
 }
