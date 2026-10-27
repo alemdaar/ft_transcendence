@@ -13,6 +13,7 @@ import {
 
 import {
     createPendingRegistration,
+    replacePendingVerificationCode,
     findPendingRegistration,
     deletePendingRegistration,
     deleteExpiredPendingRegistrations,
@@ -89,23 +90,35 @@ export async function resendVerificationCode(req: Request, res: Response) {
             message: "If a pending registration exists, a new code will be sent."
         });
     }
+    const now = Date.now();
     const lastCodeSentAt = pending.expiresAt.getTime() - 5 * 60 * 1000;
+    const retryAfter = Math.ceil((lastCodeSentAt + 60 * 1000 - now) / 1000);
 
-    if (Date.now() - lastCodeSentAt < 60 * 1000) {
-        return res.status(200).json({
-            message: "If a pending registration exists, a new code will be sent."
+    if (retryAfter > 0) {
+        res.set("Retry-After", String(retryAfter));
+        return res.status(429).json({
+            error: `Please wait ${retryAfter} seconds before requesting another code.`,
+            retryAfter
         });
     }
     const code = crypto.randomInt(100000, 1000000).toString();
 
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    const expiresAt = new Date(now + 5 * 60 * 1000);
 
-    await createPendingRegistration({
+    const replaced = await replacePendingVerificationCode({
         email,
-        passwordHash: pending.passwordHash,
+        previousExpiresAt: pending.expiresAt,
         code,
         expiresAt
     });
+
+    if (!replaced) {
+        res.set("Retry-After", "60");
+        return res.status(429).json({
+            error: "Please wait 60 seconds before requesting another code.",
+            retryAfter: 60
+        });
+    }
     await sendVerificationEmail(email, code);
     return res.status(200).json({
         message: "If a pending registration exists, a new code will be sent."

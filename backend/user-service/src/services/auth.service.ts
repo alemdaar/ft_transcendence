@@ -27,6 +27,27 @@ export async function findPendingRegistration(email: string) {
     });
 }
 
+export async function replacePendingVerificationCode(data: {
+    email: string;
+    previousExpiresAt: Date;
+    code: string;
+    expiresAt: Date;
+}) {
+    // Only one request can replace the code it originally read.
+    const result = await prisma.pendingRegistration.updateMany({
+        where: {
+            email: data.email,
+            expiresAt: data.previousExpiresAt
+        },
+        data: {
+            code: data.code,
+            expiresAt: data.expiresAt
+        }
+    });
+
+    return result.count === 1;
+}
+
 export async function deletePendingRegistration(email: string) {
     return prisma.pendingRegistration.delete({
         where: {

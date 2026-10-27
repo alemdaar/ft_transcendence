@@ -72,7 +72,7 @@ export default function VerifyEmail() {
             })
             const resulte = await response.json();
             if (!response.ok)
-                seterror(resulte.message);
+                seterror(resulte.error || resulte.message || "Unable to resend code. Please try again.");
             else
                 setsuccess("code resend seccessfully check your email");
 
