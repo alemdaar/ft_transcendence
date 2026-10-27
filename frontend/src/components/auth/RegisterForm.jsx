@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import hideIcon from '../../assets/hide.svg'
 import showIcon from '../../assets/show.svg'
-import Button from "../ui/Button";
 
 export default function RegisterForm ()
 {
@@ -62,7 +61,7 @@ export default function RegisterForm ()
             }
             
             
-        } catch (error) {
+        } catch {
             setError("Cannot connect to the server.");
         }
         finally {setloading(false);}

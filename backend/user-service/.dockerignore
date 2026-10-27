@@ -1,0 +1,14 @@
+node_modules
+dist
+src/generated
+.env
+.env.*
+!.env.example
+.git
+.agents
+.codex
+.aws
+tests
+*.log
+package.json.before-install
+tmp.json

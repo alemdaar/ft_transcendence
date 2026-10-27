@@ -15,16 +15,18 @@ if (!databaseUrl) {
     throw new Error("DATABASE_URL is not configured");
 }
 
+export const sessionStore = new PgSession({
+    conString: databaseUrl,
+    tableName: "user_sessions",
+    createTableIfMissing: false
+});
+
 export const sessionMiddleware = session({
     name: "ft.sid",
 
     secret: sessionSecret,
 
-    store: new PgSession({
-        conString: databaseUrl,
-        tableName: "user_sessions",
-        createTableIfMissing: true
-    }),
+    store: sessionStore,
 
     resave: false,
     saveUninitialized: false,

@@ -17,7 +17,7 @@ export default function VerifyEmail() {
         if (coolDown <= 0) return;
         const timer = setTimeout(() => setCoolDown((c) => c - 1 ), 1000);
         return () => clearTimeout(timer);
-    }, coolDown);
+    }, [coolDown]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,7 +54,7 @@ export default function VerifyEmail() {
             } else {
                 setsuccess("Email verified successfully!");
             }
-        } catch (error) {
+        } catch {
             seterror("Cannot connect to the server.");
         } finally {
             setloading(false);
@@ -83,14 +83,14 @@ export default function VerifyEmail() {
             if (response.status === 429)
                 setCoolDown(resulte.retryAfter || 60);
             else if (!response.ok)
-                seterror(resulte.message);
+                seterror(resulte.error || resulte.message || "Unable to resend the code. Please try again.");
             else
             {
                 setsuccess("code resend seccessfully check your email");
                 setCoolDown(60);
             }
 
-        } catch (error) {
+        } catch {
             seterror("can't connect to server");
         }
         finally { setloading(false)}

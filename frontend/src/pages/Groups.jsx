@@ -51,7 +51,7 @@ export default function Groups() {
                 seterror("");
             }
 
-        } catch (error) {
+        } catch {
             seterror("Can't connect to server")
         }
         finally {setloading(false)}
