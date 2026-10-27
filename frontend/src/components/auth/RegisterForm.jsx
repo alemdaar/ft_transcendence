@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import hideIcon from '../assets/hide.svg'
-import showIcon from '../assets/show.svg'
+import hideIcon from '../../assets/hide.svg'
+import showIcon from '../../assets/show.svg'
+import Button from "../ui/Button";
 
 export default function RegisterForm ()
 {
@@ -72,14 +73,14 @@ export default function RegisterForm ()
         {error && (
             <p
                 role="alert"
-                className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+                className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300"
             >
                 {error}
             </p>
         )}
 
         {success && (
-            <p className="rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
+            <p className="rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/50 dark:text-teal-300">
                 Account created successfully!
             </p>
         )}
@@ -87,7 +88,7 @@ export default function RegisterForm ()
         <div className="space-y-1.5">
             <label
                 htmlFor="register-email"
-                className="block text-sm font-medium text-gray-700 dark:text-green-100"
+                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
                 Email address
             </label>
@@ -100,14 +101,14 @@ export default function RegisterForm ()
                 onChange={handleEmail}
                 autoComplete="email"
                 required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-green-800"
+                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
             />
         </div>
 
         <div className="space-y-1.5">
             <label
                 htmlFor="register-password"
-                className="block text-sm font-medium text-gray-700 dark:text-green-100"
+                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
                 Password
             </label>
@@ -120,22 +121,23 @@ export default function RegisterForm ()
                 onChange={handlePassword}
                 autoComplete="new-password"
                 required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-green-800"
+                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
             />
             <button
                 type="button"
                 onClick={() => setshowpassword(!showpassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700"
             >
-                <img src={showpassword ? hideIcon : showIcon} alt="" className="h-5 w-5" />
+                <img src={showpassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90" />
             </button>
+            
         </div>
         </div>
 
         <div className="space-y-1.5">
             <label
                 htmlFor="register-confirm-password"
-                className="block text-sm font-medium text-gray-700 dark:text-green-100"
+                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
                 Confirm password
             </label>
@@ -148,14 +150,14 @@ export default function RegisterForm ()
                 onChange={handleConfirmPassword}
                 autoComplete="new-password"
                 required
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-green-700 dark:bg-green-950 dark:text-white dark:placeholder:text-gray-500 dark:focus:ring-green-800"
+                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
             />
             <button 
             type="button"
             onClick={() => setshowConfirmpassword(!showConfirmpassword)} 
-            className="absolute right-3 top-1/2 -translate-y-1/2">
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700">
                 <img src={showConfirmpassword ? hideIcon : showIcon} alt=""
-                    className="h-5 w-5"
+                    className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90"
                 />
             </button>
         </div>
@@ -164,7 +166,7 @@ export default function RegisterForm ()
         <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-green-600 dark:hover:bg-green-500"
+            className="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
         >
             {loading ? "Creating account..." : "Create account"}
         </button>
