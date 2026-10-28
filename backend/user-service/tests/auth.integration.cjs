@@ -114,9 +114,7 @@ test("PostgreSQL authentication integration", async t => {
     }
     const bearer = token => ({ Authorization: `Bearer ${token}` });
 
-    await t.test("health, readiness, JSON errors, origin checks and anonymous access", async () => {
-        assert.equal((await request("/health")).status, 200);
-        assert.equal((await request("/ready")).status, 200);
+    await t.test("JSON errors, origin checks and anonymous access", async () => {
         assert.equal((await request("/auth/me")).status, 401);
         assert.equal((await request("/auth/token", { method: "POST" })).status, 401);
         assert.equal((await request("/auth/login", { body: registration("origin"), headers: { Origin: "https://attacker.example" } })).status, 403);

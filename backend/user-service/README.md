@@ -41,8 +41,6 @@ Requests with bodies use `Content-Type: application/json`. Existing registration
 | POST | `/auth/forgot-password` | `{email}`; generic response for unknown accounts |
 | POST | `/auth/reset-password` | `{token, password, confirmpassword}` |
 | DELETE | `/auth/me` | Session; `{confirmation: "DELETE", currentPassword}` |
-| GET | `/health` | Process liveness |
-| GET | `/ready` | Database connectivity and required tables/columns |
 
 Profile edits accept display names of 1–80 characters, locations up to 80 characters or `null`, and HTTPS avatar URLs up to 2048 characters or `null`. Identity fields, campus and points cannot be changed through this API.
 
@@ -87,4 +85,4 @@ docker build -t user-service .
 docker run --rm --env-file .env -p 3001:3001 user-service
 ```
 
-The runtime image runs as the `node` user, contains compiled code and production dependencies, and checks `/ready`. It excludes `.env`, source credentials, local dependencies and tests. Configure HTTPS termination, proxy trust, and container networking in your deployment. The root Compose file currently starts PostgreSQL only.
+The runtime image runs as the node user and contains compiled code and production dependencies. It excludes `.env`, source credentials, local dependencies and tests. Configure HTTPS termination, proxy trust, and container networking in your deployment. The root Compose file currently starts PostgreSQL only.
