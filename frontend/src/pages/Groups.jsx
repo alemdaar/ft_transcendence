@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../components/ui/Button.jsx";
-
+import Input from "../components/ui/Input.jsx";
 export default function Groups() {
     const [showForm, setshowForm] = useState(false);
     const [type, setType] = useState("general");
@@ -137,6 +137,7 @@ export default function Groups() {
                         onChange={handleName}
                         required
                         />
+                
                 <input type="text"
                         placeholder="Description" 
                         className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
