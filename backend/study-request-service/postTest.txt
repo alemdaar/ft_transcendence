@@ -16,3 +16,7 @@ curl -X POST "http://localhost:8080/api/your-endpoint" \
     "specificSpot": "library hda ktoba",
     "meetTime": "4:00"
   }'
+
+
+# DELETE ALL ROWS TABLE
+  docker exec -it studyreq-db psql -U admin -d study_hub -c 'TRUNCATE TABLE "public"."students-request" RESTART IDENTITY CASCADE;'

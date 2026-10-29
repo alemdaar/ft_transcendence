@@ -10,9 +10,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - study-request-service_db-data:/var/lib/postgresql/data
+      - /home/ychedmi/Desktop/studyDb:/var/lib/postgresql/data
+      # - postgres_data:/var/lib/postgresql/data
 
-volumes:
-  study-request-service_db-data:
-    external: true
+# volumes:
+#   postgres_data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /home/ychedmi/Desktop/testdb
 

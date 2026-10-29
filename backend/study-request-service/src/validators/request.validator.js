@@ -1,16 +1,14 @@
 import { z } from 'zod';
-import { id } from 'zod/locales';
 
 export const validateStudySchema = z.object({
-	topic: z.string().trim().min(1).max(100),
-	description: z.string().trim().min(1).max(255),
-	mode: z.enum(['online', 'insite']),
+	topic: z.string().trim().min(5).max(100),
+	description: z.string().trim().min(10).max(255),
+	mode: z.enum(['online', 'insite'])
 	// status: z.enum(['open', 'claimed', 'pending', 'completed', 'cancelled'])
 });
 
 export const SessionMessage = z.object({
 	text: z.string().trim().min(1).max(500)
-	
 });
 
 
@@ -24,4 +22,9 @@ export const paramIdObj = z.object({
     .regex(/^[1-9]\d*$/)
     .transform(Number)
     .pipe(z.number().max(2147483647)),
+});
+
+export const editedPostSchema = z.object({
+	topic: z.string().trim().min(5).max(100).optional(),
+	description: z.string().trim().min(10).max(255).optional()
 });

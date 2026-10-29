@@ -1,5 +1,7 @@
 import  {prisma}  from "../instanceDb.js"
 import { SessionMeetup } from "../validators/request.validator.js";
+// import { CustomError } from "../errors/AppError.js";
+
 export const studyReq = async (req, res) => {
 
   try {
@@ -17,90 +19,60 @@ export const studyReq = async (req, res) => {
 		}
 	  });
 
-	  console.log('Request Created:', newRequest);
-	  res.status(201).json({message: 'post created', post: newRequest});
+	res.status(201).json({newRequest});
 	} catch(err) {
-	  // console.log('database crashed')
-	  res.status(500).json({ message: 'Unknown error' })
+	  res.status(500).json({Error: 'UNKOWN_ERROR' })
 	}
   }
 
 export const claimRequest = async (req, res) => {
   
-try {
-	// if (!(/^[1-9]\d*$/.test(req.params.id)) || Number(req.params.id) > 2147483647)
-	// 	throw new Error('Invalid Id')
+	try {
+		const targetReq = await prisma.studentRequest.findUnique({
+			where: { id: req.params.id}
+		})
+		if (!targetReq)
+			return res.status(404).json({Error: 'NOT_FOUND'})
+		if (targetReq.status !== 'open')
+			return res.status(409).json({Error: 'ALREADY_CLAIMED'})
+		if (targetReq.asker_id === req.user.id)
+			return res.status(403).json({Error: 'CANNOT_CLAIM_OWN'})
+
 	const updatedResult = await prisma.$transaction(async (tx) => {
 
-		const targetReq = await tx.studentRequest.findUnique({
-			where: { id: Number(req.params.id)}
-		})
-		if (!targetReq || targetReq.status !== 'open')
-			throw new Error('POST NOT_FOUND OR ALREADY CLAIMED')
-		if (targetReq.asker_id === req.user.id)
-			throw new Error('CANNOT_CLAIM_OWN')
-
-		const claimedReq = await tx.studentRequest.update({
-			where: { id: Number(req.params.id)},
-			data: {status: targetReq.mode === 'online' ? 'claimed' : 'pending', 
-			helper_id: req.user.id}
-		})
-		// FOR INSITE
-		if (claimedReq.mode === 'insite'){
-			const result = SessionMeetup.safeParse(req.body)
-			if (!result.success)
-				throw new Error('specific spot and meetTime required for insite claims')
-			const { specificSpot, meetTime } = result.data;
-
-			const meetup = await tx.sessionMeetup.create({
-				data: {
-				request_id: Number(req.params.id),
-				specificSpot: specificSpot,
-				meetTime: new Date(`1970-01-01T${meetTime}:00Z`),
-				created_at: new Date()
-				}
-			})
-			return {claimedReq, meetup};
-		}
-		// For online
-		return claimedReq
+	const claimedReq = await tx.studentRequest.update({
+		where: { id: req.params.id},
+		data: {status: targetReq.mode === 'online' ? 'claimed' : 'pending', 
+		helper_id: req.user.id}
 	})
-	console.log('CLAIMED', updatedResult)
-	return res.status(200).json({message: 'request claimed', updatedResult})
+	// FOR INSITE
+	if (claimedReq.mode === 'insite'){
+		const result = SessionMeetup.safeParse(req.body)
+		if (!result.success)
+			throw new Error('INVALID_INPUT')
+		const { specificSpot, meetTime } = result.data;
+		const meetup = await tx.sessionMeetup.create({
+			data: {
+			request_id: req.params.id,
+			specificSpot: specificSpot,
+			meetTime: new Date(`1970-01-01T${meetTime}:00Z`),
+			created_at: new Date()
+			}
+		})
+		return {claimedReq, meetup};
+	}
+	// For online
+	return claimedReq
+})
+	return res.status(200).json({updatedResult})
 } catch (err) {
-	console.log('Error', err.message)
-   	res.status(400).json({error: err.message})
+	
+	if (err.code === "P2025")
+        return res.status(404).json({error: "NOT_FOUND"})
+	if (err.message === 'INVALID_INPUT')
+		return res.status(400).json({err: 'specific spot and meetTime required for insite claims'})
+   	return res.status(500).json({error: 'UKNOWN_ERROR'})
 }
 
 }
 
-
-
-
-
-
-
-
-
-
-	// const meetup = await prisma.sessionMeetup.create({
-	//   data: {
-	//     request_id: newRequest.id,
-	//     plan_spot: 'Library 2nd Floor',
-	//     asker_on_way: false,
-	//     asker_arrived: false,
-	//     helper_on_way: false,
-	//     helper_arrived: false,
-	//     created_at: new Date(),
-	//   },
-	// });
-	// console.log('message Created:', meetup);
-	// const message = await prisma.sessionMessage.create({
-	//   data: {
-	//     request_id: newRequest.id,
-	//     sender_id: 101,
-	//     text: 'I am sitting near the window!',
-	//     created_at: new Date(),
-	//   },
-	// });
-	// console.log('message Created:', message);
