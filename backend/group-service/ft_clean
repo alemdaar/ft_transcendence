@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+
+set -u
+
+HOME_DIR="$HOME"
+NPM_DIR="$HOME_DIR/.npm"
+
+pause() {
+    read -r -p "Press Enter to continue..."
+}
+
+show_storage() {
+    echo
+    echo "=== Storage: $HOME_DIR ==="
+    df -hT "$HOME_DIR"
+    echo
+    echo "=== Largest directories ==="
+    du -xhd1 "$HOME_DIR" 2>/dev/null | sort -h | tail -15
+    echo
+}
+
+confirm() {
+    local answer
+    read -r -p "$1 [y/N] " answer
+    [[ "$answer" =~ ^[Yy]$ ]]
+}
+
+clean_npm() {
+    if command -v npm >/dev/null 2>&1; then
+        echo "Cleaning npm download cache..."
+        npm cache clean --force --cache "$NPM_DIR"
+    else
+        echo "npm is not available in PATH."
+    fi
+}
+
+clean_npx() {
+    local npx_dir="$NPM_DIR/_npx"
+
+    if [[ ! -d "$npx_dir" ]]; then
+        echo "No npx cache found."
+        return
+    fi
+
+    echo "npx cache size:"
+    du -sh "$npx_dir"
+
+    if confirm "Remove cached npx packages?"; then
+        rm -rf -- "$npx_dir"
+        echo "npx cache removed."
+    fi
+}
+
+clean_temp() {
+    echo "Checking old temporary files owned by you..."
+    find /tmp -xdev -user "$(id -u)" -type f -mtime +7 \
+        -print 2>/dev/null | head -50
+
+    if confirm "Delete your files in /tmp older than 7 days?"; then
+        find /tmp -xdev -user "$(id -u)" -type f -mtime +7 \
+            -delete 2>/dev/null
+        echo "Temporary-file cleanup completed."
+    fi
+}
+
+clean_browser_cache() {
+    local dirs=(
+        "$HOME_DIR/.config/google-chrome/Default/Cache"
+        "$HOME_DIR/.config/google-chrome/Default/Code Cache"
+        "$HOME_DIR/.config/google-chrome/Default/GPUCache"
+        "$HOME_DIR/.config/BraveSoftware/Brave-Browser/Default/Cache"
+        "$HOME_DIR/.config/BraveSoftware/Brave-Browser/Default/Code Cache"
+        "$HOME_DIR/.config/BraveSoftware/Brave-Browser/Default/GPUCache"
+    )
+
+    echo "Close Chrome and Brave completely before continuing."
+    if ! confirm "Continue with browser-cache inspection?"; then
+        return
+    fi
+
+    local existing=()
+    local dir
+
+    for dir in "${dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            du -sh "$dir"
+            existing+=("$dir")
+        fi
+    done
+
+    if ((${#existing[@]} == 0)); then
+        echo "No matching browser cache directories found."
+        return
+    fi
+
+    if confirm "Delete the listed cache directories?"; then
+        for dir in "${existing[@]}"; do
+            rm -rf -- "$dir"
+        done
+        echo "Browser caches removed."
+    fi
+}
+
+while true; do
+    echo
+    echo "================================="
+    echo "       HOME STORAGE CLEANUP"
+    echo "================================="
+    echo "1) Show storage usage"
+    echo "2) Clean npm download cache"
+    echo "3) Remove cached npx packages"
+    echo "4) Clean old temporary files"
+    echo "5) Clean Chrome/Brave browser caches"
+    echo "6) Run safe cleanup (npm + npx)"
+    echo "7) Clean ALL (npm + npx + temp + browser caches)"
+    echo "0) Exit"
+    echo
+
+    read -r -p "Choose an option: " choice
+
+    case "$choice" in
+        1)
+            show_storage
+            pause
+            ;;
+        2)
+            clean_npm
+            pause
+            ;;
+        3)
+            clean_npx
+            pause
+            ;;
+        4)
+            clean_temp
+            pause
+            ;;
+        5)
+            clean_browser_cache
+            pause
+            ;;
+        6)
+            show_storage
+            clean_npm
+            clean_npx
+            show_storage
+            pause
+            ;;
+	 7)
+            echo
+            echo "=== STORAGE BEFORE CLEANUP ==="
+            show_storage
+
+            echo "=== Cleaning npm cache ==="
+            clean_npm
+
+            echo "=== Cleaning npx cache ==="
+            clean_npx
+
+            echo "=== Cleaning temporary files ==="
+            clean_temp
+
+            echo "=== Cleaning browser caches ==="
+            clean_browser_cache
+
+            echo
+            echo "=== STORAGE AFTER CLEANUP ==="
+            show_storage
+            pause
+            ;;
+        0)
+            exit 0
+            ;;
+        *)
+            echo "Invalid option."
+            ;;
+    esac
+done

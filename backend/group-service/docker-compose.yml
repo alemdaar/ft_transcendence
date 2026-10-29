@@ -1,16 +1,13 @@
 services:
   postgres-b2:
-    image: postgres:15-alpine
-    container_name: studyPeer_b2_db
+    image: postgres:17
+    container_name: groups_database
     restart: always
     environment:
       POSTGRES_USER: transcendence_user
       POSTGRES_PASSWORD: transcendence_password
-      POSTGRES_DB: b2_groups_db
+      POSTGRES_DB: groupsDB
     ports:
       - "5432:5432"
     volumes:
-      - b2_db_data:/var/lib/postgresql/data
-
-volumes:
-  b2_db_data:
+      - /home/sfartah/postgres/group_data:/var/lib/postgresql/data
