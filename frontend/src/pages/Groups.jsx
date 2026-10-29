@@ -24,12 +24,14 @@ export default function Groups() {
             seterror("The Team must be 2 to 6");
             return ;
         }
+    
         let data = {
-            memberLimit: numMember, 
             name,
             type,
             description: desc
         }
+        if (type === "team")
+                data.memberLimit =  numMember; 
         setloading(true);
         try {
         
