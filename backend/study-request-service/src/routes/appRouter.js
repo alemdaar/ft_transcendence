@@ -1,10 +1,11 @@
 import express from 'express'
 import {studyReq, claimRequest} from '../controllers/CreateReq.js'
-import {testServer, getAllRequests, viewPost, mine, Iclaimed} from '../controllers/GetRequest.js'
+import {testServer, getAllRequests, viewPost, mine, Iclaimed, GetSessionIniste} from '../controllers/GetRequest.js'
 import { validateStudySchema, paramIdObj, editedPostSchema} from '../validators/request.validator.js'
 import { validate, validateParamId } from '../middleware/validateRequest.js'
 import { authUser } from '../middleware/auth.js'
 import { editPost } from '../controllers/PatchPost.js'
+import { deltePost } from '../controllers/DeleteReq.js'
 
 export const routeMe = express.Router()
 // CHECK USER AUTH
@@ -29,4 +30,6 @@ routeMe.get('/request-peer/myactivity/iclaimed', Iclaimed) // posts that i claim
 
 routeMe.patch('/request-peer/myactivity/:id', validateParamId(paramIdObj), validate(editedPostSchema), editPost) // edit a specific post
 
-routeMe.delete('/request-peer/myactivity/:id')
+routeMe.delete('/request-peer/myactivity/:id', validateParamId(paramIdObj), deltePost) // delete a post
+
+routeMe.get('/sessions/:id', validateParamId(paramIdObj), GetSessionIniste) // 

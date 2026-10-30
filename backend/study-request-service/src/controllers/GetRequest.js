@@ -68,3 +68,22 @@ export const Iclaimed = async (req, res) => {
     return res.status(500).json({message: "UNKOWN_ERROR"})
   }
 }
+
+export const GetSessionIniste = async (req, res) => {
+  try {
+    const studyInfo = await prisma.studentRequest.findUnique({
+      where: {
+        id: req.params.id,
+        asker_id: req.user.id,
+        OR: [
+          {status: 'pending'},
+          {status: 'claimed'}
+        ]
+        
+      }
+    })
+  } catch (err) {
+    
+  }
+
+}
