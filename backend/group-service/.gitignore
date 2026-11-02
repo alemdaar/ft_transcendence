@@ -1,2 +1,6 @@
 node_modules/
 .env
+getGroupsexplanation.txt
+ft_clean
+createGeneralGr.sh
+createTeamGr.sh

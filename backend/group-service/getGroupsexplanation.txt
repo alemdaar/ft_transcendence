@@ -1,0 +1,16 @@
+for the main group page,
+endpoint: `GET /groups`
+
+The page has two sections, `my groups` and `discover groups`, so the endpoint is split by the `scope` query parameter:
+`GET /groups?scope=mine`: will return the groups the user is already a member of.
+`GET /groups?scope=discover`: will return all general groups and same user's campus team groups, each group in discover carries one extra field `viewerStatus` that describes the user’s relationship to that group: member, pending (for team group) or none.
+
+The `Discover groups` section has a filtering feature, I added the `type` query parameter:
+`GET /groups?scope=discover&type=general`: will return only the general groups.
+`GET /groups?scope=discover&type=team`: will return only the same user's campus groups.
+
+The endpoint has also a `search` query parameter for the search bar in  `discover groups` section:
+`GET /groups?scope=discover&search=text`:  keeps only groups whose name contains the text.
+
+`type` and `search` can be combined:
+`GET /groups?scope=discover&type=general&search=text`: keeps only general groups whose name contains the text.
