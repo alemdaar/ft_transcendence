@@ -39,10 +39,7 @@ export const mine = async (req, res) => {
   try {
     const minePosts = await prisma.studentRequest.findMany({
       where: {
-        asker_id: req.user.id,
-        status: {
-          not: 'cancelled'
-        }
+        asker_id: req.user.id
       }
     })
     if (!minePosts.length)
@@ -69,21 +66,26 @@ export const Iclaimed = async (req, res) => {
   }
 }
 
-export const GetSessionIniste = async (req, res) => {
+export const GetSessionId = async (req, res) => {
   try {
     const studyInfo = await prisma.studentRequest.findUnique({
       where: {
         id: req.params.id,
-        asker_id: req.user.id,
-        OR: [
-          {status: 'pending'},
-          {status: 'claimed'}
-        ]
-        
+        // asker_id: req.user.id, // both should acces to the data !!?
+        status: {
+          in: ['pending', 'claimed']
+        }
+      },
+      include: {
+        meetup: true
       }
     })
+    if (!studyInfo || (!studyInfo.meetup && studyInfo.mode === 'insite'))
+      return res.status(404).json({Error: "NOT_FOUND"})
+    if (studyInfo.asker_id !== req.user.id || studyInfo.helper_id !== req.user.id)
+			return res.status(403).json({Error: 'CANNOT_ACCES'})
+    return res.status(200).json({studyInfo})
   } catch (err) {
-    
+    return res.status(500).json({Error: "UNKOWN_ERROR"})
   }
-
 }

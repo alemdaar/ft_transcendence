@@ -40,10 +40,9 @@ export const claimRequest = async (req, res) => {
 
 	const updatedResult = await prisma.$transaction(async (tx) => {
 
-	const claimedReq = await tx.studentRequest.update({
+	const claimedReq = await tx.targetReq.update({
 		where: { id: req.params.id},
-		data: {status: targetReq.mode === 'online' ? 'claimed' : 'pending', 
-		helper_id: req.user.id}
+		data: {status: targetReq.mode === 'online' ? 'claimed' : 'pending'}
 	})
 	// FOR INSITE
 	if (claimedReq.mode === 'insite'){
@@ -76,3 +75,43 @@ export const claimRequest = async (req, res) => {
 
 }
 
+export const CancelUnclaim = async (req, res) => {
+
+	try {
+		const findPost = await prisma.studentRequest.findUnique({
+			where: {
+				id: req.params.id
+			}
+		})
+		if (!findPost)
+			return res.status(404).json({Error: 'NOT_FOUND'})
+		if (!['pending', 'claimed'].includes(findPost.status))
+			return res.status(409).json({Error: 'NOT_CLAIMED'})
+		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id)
+			return res.status(403).json({Error: 'CANNOT_ACCES'})
+		if (findPost.status === 'pending' && findPost.helper_id === req.user.id)
+			return res.status(403).json({Error: 'CANNOT_CANCEL'})
+		const updateRes = await prisma.$transaction(async (tx) => {
+			const uptPost = await tx.studentRequest.update({
+				where: {
+					id: req.params.id,
+				},
+				data: {
+					status: 'open',
+					helper_id: null,
+				}
+			});
+			await tx.sessionMeetup.deleteMany({
+				where: {
+					request_id: req.params.id
+				}
+			})
+			return uptPost
+		})
+		return res.status(200).json({updateRes})
+	} catch (error) {
+		if (error.code === "P2025")
+        	return res.status(404).json({error: "NOT_FOUND"})
+		return res.status(500).json({error: 'UKNOWN_ERROR'})
+	}
+}

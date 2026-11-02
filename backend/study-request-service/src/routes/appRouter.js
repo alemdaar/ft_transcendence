@@ -1,6 +1,6 @@
 import express from 'express'
-import {studyReq, claimRequest} from '../controllers/CreateReq.js'
-import {testServer, getAllRequests, viewPost, mine, Iclaimed, GetSessionIniste} from '../controllers/GetRequest.js'
+import {studyReq, claimRequest, CancelUnclaim} from '../controllers/CreateReq.js'
+import {testServer, getAllRequests, viewPost, mine, Iclaimed, GetSessionId} from '../controllers/GetRequest.js'
 import { validateStudySchema, paramIdObj, editedPostSchema} from '../validators/request.validator.js'
 import { validate, validateParamId } from '../middleware/validateRequest.js'
 import { authUser } from '../middleware/auth.js'
@@ -32,4 +32,6 @@ routeMe.patch('/request-peer/myactivity/:id', validateParamId(paramIdObj), valid
 
 routeMe.delete('/request-peer/myactivity/:id', validateParamId(paramIdObj), deltePost) // delete a post
 
-routeMe.get('/sessions/:id', validateParamId(paramIdObj), GetSessionIniste) // 
+routeMe.get('/sessions/:id', validateParamId(paramIdObj), GetSessionId) // get info: studentPost + meetup or studentPost 
+
+routeMe.post('/sessions/:id/leaveit', validateParamId(paramIdObj), CancelUnclaim)
