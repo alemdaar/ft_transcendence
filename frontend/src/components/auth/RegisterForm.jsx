@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import hideIcon from '../../assets/hide.svg'
 import showIcon from '../../assets/show.svg'
 import Button from "../ui/Button";
+import Input from "../ui/Input";
 
 export default function RegisterForm ()
 {
@@ -37,7 +38,7 @@ export default function RegisterForm ()
         }
 
         const data = {
-            email, 
+            email,
             password,
             confirmpassword
         }
@@ -93,7 +94,7 @@ export default function RegisterForm ()
                 Email address
             </label>
 
-            <input
+            <Input
                 id="register-email"
                 type="email"
                 placeholder="Enter your email address"
@@ -101,7 +102,7 @@ export default function RegisterForm ()
                 onChange={handleEmail}
                 autoComplete="email"
                 required
-                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                className="w-full"
             />
         </div>
 
@@ -113,7 +114,7 @@ export default function RegisterForm ()
                 Password
             </label>
         <div className="relative">
-            <input
+            <Input
                 id="register-password"
                 type={showpassword ? "text" : "password"}
                 placeholder="At least 8 characters"
@@ -121,7 +122,7 @@ export default function RegisterForm ()
                 onChange={handlePassword}
                 autoComplete="new-password"
                 required
-                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                className="w-full"
             />
             <button
                 type="button"
@@ -142,7 +143,7 @@ export default function RegisterForm ()
                 Confirm password
             </label>
         <div className="relative">
-            <input
+            <Input
                 id="register-confirm-password"
                 type={showConfirmpassword ? "text" : "password"}
                 placeholder="Re-enter your password"
@@ -150,7 +151,7 @@ export default function RegisterForm ()
                 onChange={handleConfirmPassword}
                 autoComplete="new-password"
                 required
-                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                className="w-full"
             />
             <button 
             type="button"
@@ -163,13 +164,14 @@ export default function RegisterForm ()
         </div>
         </div>
 
-        <button
+        <Button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"
-        >
+            className="w-full"
+            >
+            {/* className="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900" */}
             {loading ? "Creating account..." : "Create account"}
-        </button>
+        </Button>
 
     </form>
     );

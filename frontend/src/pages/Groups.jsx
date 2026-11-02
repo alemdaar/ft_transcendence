@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "../components/ui/Button.jsx";
 import Input from "../components/ui/Input.jsx";
+
 export default function Groups() {
     const [showForm, setshowForm] = useState(false);
     const [type, setType] = useState("general");
@@ -106,7 +107,8 @@ export default function Groups() {
                 <Button
                 type="button"
                 onClick={() => setshowForm(false)}
-                variant="secondary"
+                // variant="secondary"
+                
                 >
                 Close
                 </Button>
@@ -131,28 +133,28 @@ export default function Groups() {
                         }`}
                         >
                         Team</Button>
-                <input type="text"
+                <Input type="text"
                         placeholder="Group name" 
                         minLength={3}
                         maxLength={30}
-                        className="mt-1 w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                        className="w-full"
                         onChange={handleName}
                         required
                         />
                 
-                <input type="text"
+                <Input type="text"
                         placeholder="Description" 
-                        className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                        className="w-full "
                         onChange={handleDesc}
                         required
                         />
                 {
                     (type === "team") && (              
-                        <input type="number" min="2" max="6" 
+                        <Input type="number" min="2" max="6" 
                                 placeholder="Member Limit" 
                                 onChange={handleNumMember}
                                 required
-                                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"/>
+                                className="w-full"/>
                     )
                 }
                 <Button className="mt-2 w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900"

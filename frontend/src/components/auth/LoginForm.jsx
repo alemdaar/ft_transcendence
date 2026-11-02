@@ -2,6 +2,7 @@ import { useState } from "react"
 import hideIcon from '../../assets/hide.svg'
 import showIcon from '../../assets/show.svg'
 import Button from "../ui/Button";
+import Input from "../ui/Input";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -81,19 +82,19 @@ export default function LoginForm() {
             </p>
         )}
        
-        <input
+        <Input
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={handleChange}
-            className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+            className="w-full "
         />
         <div className="relative">
-            <input type={showPassword ? "text" : "password"}
+            <Input type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={handlePass}
-                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                className="w-full "
             />
             <button type="button"
                 onClick={() => setshowPassword(!showPassword)}
