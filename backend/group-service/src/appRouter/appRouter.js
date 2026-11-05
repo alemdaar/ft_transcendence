@@ -8,15 +8,23 @@ import { authenticate } from '../middleware/JWTauth.js'
 import { GroupSchema } from '../ZODSchema/GroupSchema.js'
 
 export const appRouter = Router()
+
 appRouter.use(healthcheck)
 
 appRouter.use(authenticate)
+
 appRouter.post('/groups', validate(GroupSchema), createGroup)
+
 appRouter.get('/groups', getGroups)
+
 appRouter.get('/groups/:id', getOneGroup)
+
 appRouter.delete('/groups/:id', deleteGroup)
+
 appRouter.post('/groups/:id/join', joinGeneralGroup)
+
 appRouter.post('/groups/:id/join-request', joinTeamGroup)
+
 appRouter.patch('/groups/:id/join-request/:requestId', approveTeamJoin)
 
 // appRouter.delete('/groups', async () => {

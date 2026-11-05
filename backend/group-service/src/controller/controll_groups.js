@@ -35,7 +35,8 @@ export const createGroup = async (req, res)=>{
 	}
 }
 
-function buildDiscoverWhere(type, campus, search) {
+function FilterAndSearch(type, campus, search) {
+
 	let typeConditions
 	if (type === 'team') {
 		typeConditions = { type: 'team', campus }
@@ -51,7 +52,7 @@ function buildDiscoverWhere(type, campus, search) {
 			]
 		}
 	}
-	
+
 	if (!search) {
 		return typeConditions
 	}
@@ -68,62 +69,84 @@ function buildDiscoverWhere(type, campus, search) {
 	}
 }
 
-export const getGroups = async (req, res) => {
-	
-	const {scope, type, search, sort} = req.query
-	try {
-		if (scope === 'mine') {
-			// retrieve all membership records for the current user from the member table
-			const userMembership = await db.member.findMany({
-				where: { userID: Number(req.user.subject) },
-				include: { group: { include: { _count: { select: { members: true } } } } }
-			})
-			
-			/* loop trough the membership array and get only the group 
-			object from it but without ownerID field */
-			const groups = userMembership.map(({ group: { ownerID, _count, ...rest } }) => ({
-				...rest,
-    			memberCount: _count.members
-			}))
+const discoverGroup = async (req, page) => {
 
-			return res.status(200).json(groups)
+	return groups
+}
+
+const pagination = (page) => {
+
+	let pageNumber = 1
+	if (page !== undefined) {
+		pageNumber = Number(page)
+		if (!/^\d+$/.test(page) || pageNumber < 1)
+			return {error: "Page must be a positif number."}
+		if (!Number.isSafeInteger(pageNumber))
+			return {error: "number too big."}
+	}
+
+	const LIMIT = 4
+	const skiprecord = (pageNumber - 1) * LIMIT
+	return {LIMIT, skiprecord, pageNumber}
+}
+
+const buildPaginationObj = (page, goupsLength) => {
+	return {
+    "currentPage": page.pageNumber,
+    "limit": page.LIMIT,
+    "totalGroups": goupsLength,
+    "totalPages": goupsLength / page.LIMIT,
+    "hasPrevPage": page.pageNumber > 1 ? true : false,
+    "hasNextPage": page.pageNumber < totalPages ? true : false
+  }
+}
+
+export const getGroups = async (req, res) => {
+
+	const UID = Number(req.user.subject)
+	const page = pagination(req.query.page)
+	if (page.error)
+		return res.status(400).json(page);
+
+	const scope = req.query.scope
+	try {
+		if (scope === 'mine' || scope === 'pending') {
+			const GroupCondition = scope === mine ? {members : {some: { userID: UID }}} : {joinTeams : {some: { userID: UID }}}
+			const groups = await db.group.findMany({
+				where: GroupCondition,
+				omit: {ownerID: true},
+				include: {_count: {select: {members: true}}},
+				take: page.LIMIT,
+				skip: page.skiprecord,
+				orderBy: {createdAt: 'desc'}
+			})
+			const paginationInfo = buildPaginationObj(page, groups.length)
+			return res.status(200).json({"data": groups, "pagination": paginationInfo})
 		}
 		if (scope === 'discover') {
-			
-			// Retrieve the user's memberships and the user's pending join requests
-			const [memberRows, pendingRows] = await Promise.all([
-				db.member.findMany({ where: { userID: Number(req.user.subject) } }),
-				db.join_team.findMany({ where: { userID: Number(req.user.subject), status: 'PENDING' } })
-			])
-
-			// build two arrays with only the groupIDs from both memberRows and pendingRows
-			const memberGroupIds = memberRows.map(row => row.groupID)
-			const pendingGroupIds = pendingRows.map(row => row.groupID)
-
-			// retrieve all groups based on type and search queries
-			const sortOrder = req.query.sort === 'oldest' ? 'asc' : 'desc'; 
-			const groups = await db.group.findMany({
-				where: buildDiscoverWhere(type, req.user.campus, search),
-				include: { _count: { select: { members: true } } },
-				omit: { ownerID: true },
-				orderBy: {
-    				createdAt: sortOrder
-  				}
-			})
-
-			// loop trough all groups and check if it is present in member groupIds array
-			// or pending groupIDs array to add viewerStatus depending on it
-			console.log(groups)
-			const groupsWithStatus = groups.map(({_count, ...group}) => {
-				let viewerStatus = 'none'
-				if (memberGroupIds.includes(group.id)) {
-					viewerStatus = 'member'
-				} else if (pendingGroupIds.includes(group.id)) {
-					viewerStatus = 'pending'
-				}
-				return { ...group, memberCount: _count.members, viewerStatus }
-			})
-			return res.status(200).json(groupsWithStatus)
+			if (req.query.type !== undefined 
+			&& req.query.type !== 'team' 
+			&& req.query.type !== 'general') {
+				return {error: 'type must be team or general'}
+			}
+				const {type, search, sort} = req.query
+				// retrieve all groups based on type and search queries
+				const groups = await db.group.findMany({
+					where: {
+						AND: [
+							{members: {none: {userID: Number(req.user.subject)}}},
+							{joinTeams: {none: {userID: Number(req.user.subject)}}},
+							FilterAndSearch(type, req.user.campus, search)
+						]
+					},
+					omit: { ownerID: true },
+					include: { _count: { select: { members: true } } },
+					take: page.LIMIT,
+					skip: page.skiprecord,
+					orderBy: { createdAt: sort === 'oldest' ? 'asc' : 'desc' }
+				})
+			const paginationInfo = buildPaginationObj(page, groups.length)
+			return res.status(200).json({"data": groups, "pagination": paginationInfo})
 		}
 		return res.status(400).json({ error: 'scope must be "mine" or "discover"' })
 	} catch (error) {
