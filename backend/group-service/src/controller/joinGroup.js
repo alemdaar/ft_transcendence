@@ -105,7 +105,6 @@ export const approveTeamJoin = async (req, res) => {
         || !/^\d+$/.test(req.params.requestId)) {
 		return res.status(400).json({ error: "Invalid ID or requestId format. Must be a positive number." });
   	}
-    
     const GID = Number(req.params.id)
 	const UID = Number(req.user.subject)
     const requestId = Number(req.params.requestId)
@@ -131,7 +130,7 @@ export const approveTeamJoin = async (req, res) => {
 		}
 		
 		// check if the groub hase an empty place
-		if (group.members.length() === group.memberLimit) {
+		if (group.members.length === group.memberLimit) {
 			return res.status(409).json({error: 'Cannot approve request. The group has reached its member limit.'})
 		}
 
@@ -142,7 +141,7 @@ export const approveTeamJoin = async (req, res) => {
 
 		// update the join request status to accepted and add the user as member in the group
 		await db.$transaction(async (tx)=>{
-			await tx.join_team.update({
+			const request = await tx.join_team.update({
 				where: {
 					id: requestId,
 					status: 'PENDING'
@@ -151,17 +150,18 @@ export const approveTeamJoin = async (req, res) => {
 					status: 'ACCEPTED'
 				}
 			})
-	
+
 			await tx.member.create({
 				data: {
 					groupID: GID,
-					userID: UID,
+					userID: request.userID,
 					role: 'MEMBER'
 				}
 			})
 		})
 		return res.status(200).json({message: 'Join request approved successfully. User is now a member.'})
 	} catch (error) {
+		console.error(error)
 		if (error.code === 'P2025')
 			return res.status(404).json({error: 'Join-request not found or has already been processed.'})
 		return res.status(500).json({error: 'Unexpected error, try later...'})

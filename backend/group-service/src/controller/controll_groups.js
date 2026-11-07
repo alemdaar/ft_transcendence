@@ -69,11 +69,6 @@ function FilterAndSearch(type, campus, search) {
 	}
 }
 
-const discoverGroup = async (req, page) => {
-
-	return groups
-}
-
 const pagination = (page) => {
 
 	let pageNumber = 1
@@ -95,9 +90,9 @@ const buildPaginationObj = (page, goupsLength) => {
     "currentPage": page.pageNumber,
     "limit": page.LIMIT,
     "totalGroups": goupsLength,
-    "totalPages": goupsLength / page.LIMIT,
+    "totalPages": Math.ceil(goupsLength / page.LIMIT),
     "hasPrevPage": page.pageNumber > 1 ? true : false,
-    "hasNextPage": page.pageNumber < totalPages ? true : false
+    "hasNextPage": page.pageNumber < goupsLength ? true : false
   }
 }
 
@@ -111,7 +106,7 @@ export const getGroups = async (req, res) => {
 	const scope = req.query.scope
 	try {
 		if (scope === 'mine' || scope === 'pending') {
-			const GroupCondition = scope === mine ? {members : {some: { userID: UID }}} : {joinTeams : {some: { userID: UID }}}
+			const GroupCondition = scope === 'mine' ? {members : {some: { userID: UID }}} : {joinTeams : {some: { userID: UID, status: 'PENDING'}}}
 			const groups = await db.group.findMany({
 				where: GroupCondition,
 				omit: {ownerID: true},
@@ -157,13 +152,11 @@ export const getGroups = async (req, res) => {
 }
 
 export const getOneGroup = async (req, res) => {
-	
-	const userCampus = req.user.campus
-	
 	if (!/^\d+$/.test(req.params.id)) {
 		return res.status(400).json({ error: "Invalid ID format. Must be a positive number." });
 	}
-	
+
+	const userCampus = req.user.campus
 	const GID = parseInt(req.params.id, 10);
 	
 	try {
@@ -182,13 +175,12 @@ export const getOneGroup = async (req, res) => {
 			return res.status(200).json(group)
 		}
 		
-		return res.status(404).json({message: `Group not found !`})
+		return res.status(404).json({error: `Group not found !`})
 	} catch (error) {
 		console.error(error)
 		return res.status(500).json({error: 'Unexpected error, try later...'})
 	}
 }
-
 
 export const deleteGroup = async (req, res) => {
 	
@@ -196,7 +188,7 @@ export const deleteGroup = async (req, res) => {
 		return res.status(400).json({ error: "Invalid ID format. Must be a positive number." });
 	  }
 
-	  const GID = parseInt(req.params.id, 10);
+	const GID = parseInt(req.params.id, 10);
 	const UID = Number(req.user.subject)
 
 	try {
