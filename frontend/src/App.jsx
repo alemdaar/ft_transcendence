@@ -2,6 +2,7 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import Groups from './pages/Groups.jsx'
 import VerifyEmail from './pages/VerifyEmail.jsx';
+import StudyRequest from './pages/StudyRequests.jsx';
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Link } from 'react-router-dom';
@@ -33,6 +34,7 @@ function Home()
         >
           Groups
         </Link>
+        <Link to="/study-request">Study Request</Link>
       </div>
     </div>
   )
@@ -66,6 +68,7 @@ export default function App() {
           <Route path='/register' element={<Register/>} />
           <Route path='/verify-email' element={<VerifyEmail/>} />
           <Route path='/groups' element={<Groups/>}/>
+          <Route path="/study-request" element={<StudyRequest />} />
         </Routes>
       </BrowserRouter>
       </div>
