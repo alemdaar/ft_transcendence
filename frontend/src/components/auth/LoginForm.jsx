@@ -71,13 +71,13 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-            <p className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">
+            <p className="mb-4 rounded-xl border border-danger-line bg-danger-soft p-3 text-sm text-danger   ">
                 {error}
             </p>
         )}
 
         {sucess && (
-            <p className="mb-4 rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/50 dark:text-teal-300">
+            <p className="mb-4 rounded-xl border border-success-line bg-selected p-3 text-sm text-success   ">
                 Login successful!
             </p>
         )}
@@ -98,7 +98,7 @@ export default function LoginForm() {
             />
             <button type="button"
                 onClick={() => setshowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-muted transition hover:bg-soft "
             >
                 <img src={showPassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90"/>
             </button>

@@ -74,14 +74,14 @@ export default function RegisterForm ()
         {error && (
             <p
                 role="alert"
-                className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300"
+                className="rounded-xl border border-danger-line bg-danger-soft p-3 text-sm text-danger   "
             >
                 {error}
             </p>
         )}
 
         {success && (
-            <p className="rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/50 dark:text-teal-300">
+            <p className="rounded-xl border border-success-line bg-selected p-3 text-sm text-success   ">
                 Account created successfully!
             </p>
         )}
@@ -89,7 +89,7 @@ export default function RegisterForm ()
         <div className="space-y-1.5">
             <label
                 htmlFor="register-email"
-                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-sm font-medium text-fg "
             >
                 Email address
             </label>
@@ -109,7 +109,7 @@ export default function RegisterForm ()
         <div className="space-y-1.5">
             <label
                 htmlFor="register-password"
-                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-sm font-medium text-fg "
             >
                 Password
             </label>
@@ -127,7 +127,7 @@ export default function RegisterForm ()
             <button
                 type="button"
                 onClick={() => setshowpassword(!showpassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-muted transition hover:bg-soft "
             >
                 <img src={showpassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90" />
             </button>
@@ -138,7 +138,7 @@ export default function RegisterForm ()
         <div className="space-y-1.5">
             <label
                 htmlFor="register-confirm-password"
-                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="block text-sm font-medium text-fg "
             >
                 Confirm password
             </label>
@@ -156,7 +156,7 @@ export default function RegisterForm ()
             <button 
             type="button"
             onClick={() => setshowConfirmpassword(!showConfirmpassword)} 
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700">
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-muted transition hover:bg-soft ">
                 <img src={showConfirmpassword ? hideIcon : showIcon} alt=""
                     className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90"
                 />
@@ -169,7 +169,7 @@ export default function RegisterForm ()
             disabled={loading}
             className="w-full"
             >
-            {/* className="w-full rounded-xl bg-teal-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus:ring-offset-zinc-900" */}
+            {/* className="w-full rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60   " */}
             {loading ? "Creating account..." : "Create account"}
         </Button>
 
