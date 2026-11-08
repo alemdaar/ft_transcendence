@@ -177,3 +177,26 @@
   padding: 0;
   background: transparent;
 }
+
+/* Shared search/filter treatment for the study-request and group toolbars. */
+.filter-input {
+  background-color: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 28%, var(--surface));
+  box-shadow: none;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.filter-input:hover {
+  border-color: color-mix(in srgb, var(--highlight) 50%, var(--surface));
+}
+.filter-input:focus {
+  border-color: var(--highlight);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--highlight) 16%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .filter-input {
+    transition: none;
+  }
+}
