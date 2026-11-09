@@ -5,7 +5,7 @@ import { createGroup, getGroups, getOneGroup, deleteGroup} from '../controller/c
 import { joinGeneralGroup, joinTeamGroup, approveTeamJoin } from '../controller/joinGroup.js'
 import { validate } from '../middleware/validate.js'
 import { authenticate } from '../middleware/JWTauth.js'
-import { GroupSchema } from '../ZODSchema/GroupSchema.js'
+import { GroupSchema, idParamSchema, pageQuerySchema, reqIdSchema } from '../ZODSchema/GroupSchema.js'
 
 export const appRouter = Router()
 
@@ -15,17 +15,17 @@ appRouter.use(authenticate)
 
 appRouter.post('/groups', validate(GroupSchema), createGroup)
 
-appRouter.get('/groups', getGroups)
+appRouter.get('/groups', validate(pageQuerySchema, 'query'), getGroups)
 
-appRouter.get('/groups/:id', getOneGroup)
+appRouter.get('/groups/:id', validate(idParamSchema, 'params'), getOneGroup)
 
-appRouter.delete('/groups/:id', deleteGroup)
+appRouter.delete('/groups/:id', validate(idParamSchema, 'params'), deleteGroup)
 
-appRouter.post('/groups/:id/join', joinGeneralGroup)
+appRouter.post('/groups/:id/join', validate(idParamSchema, 'params'), joinGeneralGroup)
 
-appRouter.post('/groups/:id/join-request', joinTeamGroup)
+appRouter.post('/groups/:id/join-request', validate(idParamSchema, 'params'), joinTeamGroup)
 
-appRouter.patch('/groups/:id/join-request/:requestId', approveTeamJoin)
+appRouter.patch('/groups/:id/join-request/:requestId', validate(idParamSchema, 'params'), validate(reqIdSchema, 'params'), approveTeamJoin)
 
 // appRouter.delete('/groups', async () => {
 //   try {
