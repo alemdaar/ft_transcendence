@@ -9,11 +9,10 @@ export const validate = (schemaObj) => {
                 field: issue.path.join("."),
                 message: issue.message
             }))
-            console.log({errors})
+            console.log({Error: errors.})
             return res.status(400).json({errors});
         }
         req.body = result.data;
-        // console.log(result.data)
         next();
     }
     

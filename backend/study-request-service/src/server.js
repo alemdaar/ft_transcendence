@@ -1,8 +1,8 @@
 import  express from "express";
+import 'dotenv/config';
 import {routeMe} from './routes/appRouter.js'
 
 const PORT = 3000;
-
 
 const app = express();
 

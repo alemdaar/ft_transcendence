@@ -14,10 +14,10 @@ export const getAllRequests = async (req, res) => {
     });
 
     if (!allPost.length)
-      res.status(200).json({message: "No Posts Created Yet"});
-    res.status(200).json({allPost});
+      return res.status(200).json({message: "No Posts Created Yet"});
+    return res.status(200).json({allPost});
   } catch (err) {
-    res.status(500).json({ error: 'UNKOWN_ERROR'})
+    res.status(500).json({ Error: 'UNKOWN_ERROR'})
   }
 }
 
@@ -25,13 +25,13 @@ export const viewPost = async (req, res) => {
   // can throw errors if the database is unavailable or the query fails.
   try {
     const oneRequest = await prisma.studentRequest.findUnique({
-      where: {id: req.params.id, status: 'open'}
+      where: {id: req.params.id}
     })
     if (!oneRequest)
-      return res.status(404).json({error: 'NOT_FOUND'})
+      return res.status(404).json({Error: 'NOT_FOUND'})
     res.status(200).json({oneRequest})
   } catch(err) {
-    res.status(500).json({ error: 'UNKOWN_ERROR'})
+    res.status(500).json({ Error: 'UNKOWN_ERROR'})
   }
 }
 // posts that i created
@@ -43,10 +43,10 @@ export const mine = async (req, res) => {
       }
     })
     if (!minePosts.length)
-        return res.status(200).json({message: 'No requests Posted From You!'})
+        return res.status(200).json({Error: 'No requests Posted From You!'})
     return res.status(200).json({minePosts})
   } catch (error) {
-    return res.status(500).json({error: "UNKOWN_ERROR"})
+    return res.status(500).json({Error: "UNKOWN_ERROR"})
   }
 }
 
@@ -59,10 +59,10 @@ export const Iclaimed = async (req, res) => {
       }
     })
     if (!claimed.length)
-        return res.status(200).json({message: 'No Post are Claimed From You!'})
+        return res.status(200).json({Error: 'No Post are Claimed From You!'})
     return res.status(200).json({claimed})
   } catch (error) {
-    return res.status(500).json({message: "UNKOWN_ERROR"})
+    return res.status(500).json({Error: "UNKOWN_ERROR"})
   }
 }
 
@@ -86,6 +86,32 @@ export const GetSessionId = async (req, res) => {
 			return res.status(403).json({Error: 'CANNOT_ACCES'})
     return res.status(200).json({studyInfo})
   } catch (err) {
+    return res.status(500).json({Error: "UNKOWN_ERROR"})
+  }
+}
+
+export const getAllMsg = async (req, res) => {
+  try {
+    const msgPost = await prisma.studentRequest.findUnique({
+      where: {
+        id: req.params.id
+      }
+    })
+    if (!msgPost)
+      return res.status(404).json({Error: "NOT_FOUND"})
+    if (msgPost.asker_id !== req.user.id && msgPost.helper_id !== req.user.id)
+        return res.status(403).json({Error: 'CANNOT_ACCES'})
+    if (msgPost.status !== 'claimed' || msgPost.mode !== 'online')
+			return res.status(409).json({Error: 'ACTION_FAILED'})
+
+    const getMsgs = await prisma.sessionMessage.findMany({
+      where: {
+        request_id: req.params.id
+      }
+  })
+  return res.status(200).json({getMsgs})
+  } catch (error) {
+    console.log(error)
     return res.status(500).json({Error: "UNKOWN_ERROR"})
   }
 }

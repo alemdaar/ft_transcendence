@@ -7,8 +7,8 @@ export const validateStudySchema = z.object({
 	// status: z.enum(['open', 'claimed', 'pending', 'completed', 'cancelled'])
 });
 
-export const SessionMessage = z.object({
-	text: z.string().trim().min(1).max(500)
+export const SessionMsgObj = z.object({
+	msg: z.string().trim().min(1).max(500)
 });
 
 
