@@ -37,8 +37,8 @@ export async function createStudyRequest({ topic, mode, description }) {
   const data = await response.json().catch(() => null);
   if (!response.ok) {
     throw new Error(
-      typeof data?.message === "string"
-        ? data.message
+      typeof data?.Error === "string"
+        ? data.Error
         : "Could not create your study request.",
     );
   }

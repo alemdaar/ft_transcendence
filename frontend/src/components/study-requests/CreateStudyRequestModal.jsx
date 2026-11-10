@@ -63,7 +63,7 @@ export default function CreateStudyRequestModal({ open, onClose, onCreated }) {
             placeholder="e.g. React hooks or C pointers"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            minLength={1}
+            minLength={5}
             maxLength={100}
             required
             autoFocus
@@ -79,7 +79,7 @@ export default function CreateStudyRequestModal({ open, onClose, onCreated }) {
               placeholder="What have you tried, and where are you stuck?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              minLength={1}
+              minLength={10}
               maxLength={255}
               required
               aria-describedby="description-count"
