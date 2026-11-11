@@ -68,6 +68,8 @@ export const claimRequest = async (req, res) => {
 	// For online
 	return claimedReq
 })
+	// FETCH B1 for name and avatar
+	
 	return res.status(200).json({updatedResult})
 } catch (err) {
 	

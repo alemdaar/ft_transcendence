@@ -31,7 +31,7 @@ routeMe.patch('/peer-request/myactivity/:id', validateParamId(paramIdObj), valid
 
 routeMe.delete('/peer-request/myactivity/:id', validateParamId(paramIdObj), deltePost) // delete a post
 
-routeMe.get('/sessions/:id', validateParamId(paramIdObj), GetSessionId) // get info: studentPost + meetup or studentPost 
+routeMe.get('/sessions/:id', validateParamId(paramIdObj), GetSessionId) // get info: studentPost + meetup  or studentPost (either pending or claimed)
 
 routeMe.post('/sessions/:id/leaveit', validateParamId(paramIdObj), CancelUnclaim) // cancel claimed or pending post (insite or online)
 
@@ -46,3 +46,5 @@ routeMe.post('/sessions/:id/accept', validateParamId(paramIdObj), acceptInsite)
 routeMe.patch('/sessions/:id/on-the-way', validateParamId(paramIdObj), onTheWay)
 
 routeMe.patch('/sessions/:id/arrived', validateParamId(paramIdObj), arrived)
+
+

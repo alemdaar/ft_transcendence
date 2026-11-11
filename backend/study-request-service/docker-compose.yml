@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /home/ychedmi/Desktop/newstudyDb:/var/lib/postgresql/data
+      - /home/ychedmi/Desktop/studyDb:/var/lib/postgresql/data
       # - postgres_data:/var/lib/postgresql/data
 
 # volumes:

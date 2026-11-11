@@ -82,7 +82,7 @@ export const GetSessionId = async (req, res) => {
     })
     if (!studyInfo || (!studyInfo.meetup && studyInfo.mode === 'insite'))
       return res.status(404).json({Error: "NOT_FOUND"})
-    if (studyInfo.asker_id !== req.user.id || studyInfo.helper_id !== req.user.id)
+    if (studyInfo.asker_id !== req.user.id && studyInfo.helper_id !== req.user.id)
 			return res.status(403).json({Error: 'CANNOT_ACCES'})
     return res.status(200).json({studyInfo})
   } catch (err) {
