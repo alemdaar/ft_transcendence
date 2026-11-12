@@ -1,8 +1,7 @@
 import Router from 'express';
-import {db} from '../db.js'
 import { healthcheck } from '../controller/healthcheck.js'
 import { createGroup, getGroups, getOneGroup, deleteGroup} from '../controller/controll_groups.js'
-import { joinGeneralGroup, joinTeamGroup, approveTeamJoin } from '../controller/joinGroup.js'
+import { joinGeneralGroup, joinTeamGroup, approveTeamJoin, getPendingRequest, getGroupMembers } from '../controller/joinGroup.js'
 import { validate } from '../middleware/validate.js'
 import { authenticate } from '../middleware/JWTauth.js'
 import { GroupSchema, idParamSchema, pageQuerySchema, reqIdSchema } from '../ZODSchema/GroupSchema.js'
@@ -27,13 +26,6 @@ appRouter.post('/groups/:id/join-request', validate(idParamSchema, 'params'), jo
 
 appRouter.patch('/groups/:id/join-request/:requestId', validate(idParamSchema, 'params'), validate(reqIdSchema, 'params'), approveTeamJoin)
 
-// appRouter.delete('/groups', async () => {
-//   try {
-//     // Send a raw SQL command directly to PostgreSQL
-//     await db.$executeRawUnsafe('TRUNCATE TABLE "Group" RESTART IDENTITY CASCADE;');
-    
-//     console.log("All groups, members, messages, and requests have been wiped. IDs reset to 1.");
-//   } catch (error) {
-//     console.error("Error resetting tables:", error);
-//   }
-// })
+appRouter.get('/groups/:id/join-request', validate(idParamSchema, 'params'), getPendingRequest)
+
+appRouter.get('/groups/:id/members', validate(idParamSchema, 'params'), getGroupMembers)
