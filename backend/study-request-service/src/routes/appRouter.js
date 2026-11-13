@@ -6,6 +6,7 @@ import { validate, validateParamId } from '../middleware/validateRequest.js'
 import { authUser } from '../middleware/auth.js'
 import { editPost } from '../controllers/PatchPost.js'
 import { deltePost } from '../controllers/DeleteReq.js'
+import { FetchTest } from '../controllers/FetchB1.js'
 
 export const routeMe = express.Router()
 // CHECK USER AUTH
@@ -48,3 +49,4 @@ routeMe.patch('/sessions/:id/on-the-way', validateParamId(paramIdObj), onTheWay)
 routeMe.patch('/sessions/:id/arrived', validateParamId(paramIdObj), arrived)
 
 
+routeMe.get('/api/users/me', FetchTest)

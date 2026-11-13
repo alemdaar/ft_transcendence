@@ -84,6 +84,7 @@ export const GetSessionId = async (req, res) => {
       return res.status(404).json({Error: "NOT_FOUND"})
     if (studyInfo.asker_id !== req.user.id && studyInfo.helper_id !== req.user.id)
 			return res.status(403).json({Error: 'CANNOT_ACCES'})
+    // maybe fetching here too
     return res.status(200).json({studyInfo})
   } catch (err) {
     return res.status(500).json({Error: "UNKOWN_ERROR"})

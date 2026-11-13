@@ -1,5 +1,6 @@
 import  {prisma}  from "../instanceDb.js"
 import { SessionMeetup } from "../validators/request.validator.js";
+import { fetchedData } from "./FetchB1.js";
 // import { IfindPost } from "./FindPost.js";
 // import { CustomError } from "../errors/AppError.js";
 
@@ -69,7 +70,7 @@ export const claimRequest = async (req, res) => {
 	return claimedReq
 })
 	// FETCH B1 for name and avatar
-	
+	const fetchedData = fetchedData()
 	return res.status(200).json({updatedResult})
 } catch (err) {
 	
