@@ -7,7 +7,7 @@ import { cleanupAuthData } from "./services/cleanup.service";
 
 const server = app.listen(port, () => console.log(`User service running on port ${port}`));
 const cleanup = setInterval(() => {
-    cleanupAuthData().catch(() => console.error("Authentication cleanup failed"));
+    cleanupAuthData().catch(error => console.error("Authentication cleanup failed:", error));
 }, 5 * 60 * 1000);
 cleanup.unref();
 for (const signal of ["SIGTERM", "SIGINT"] as const) {
