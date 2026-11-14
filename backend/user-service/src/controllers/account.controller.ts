@@ -6,6 +6,9 @@ import { updateProfile, changeUserPassword, deleteUserAccount } from "../service
 import { requestPasswordReset, resetUserPassword } from "../services/password-reset.service";
 import { HttpError } from "../lib/http-error";
 import { destroySession } from "../lib/session";
+import { unlink } from "node:fs/promises";
+import path from "node:path";
+import { avatarDir, saveAvatar } from "../services/avatar.service";
 
 export async function editProfile(req: Request, res: Response) {
     const result = profileSchema.safeParse(req.body);
@@ -53,4 +56,32 @@ export async function deleteAccount(req: Request, res: Response) {
     await deleteUserAccount(user);
     await destroySession(req, res);
     return res.json({ message: "Account deleted" });
+}
+
+
+export async function uploadAvatar(req: Request, res: Response) {
+    if (!req.file) {
+        throw new HttpError(400, "Avatar image is required");
+    }
+
+    const user = res.locals.user as User;
+
+    // Process image and save it to disk
+    const avatarUrl = await saveAvatar(req.file.buffer, user.id);
+
+    try {
+        // Save avatar URL in PostgreSQL
+        const updatedUser = await updateProfile(user, { avatarUrl });
+
+        return res.status(200).json({
+            user: updatedUser
+        });
+    } catch (error) {
+        // Remove new file if database update fails
+        await unlink(
+            path.join(avatarDir, path.basename(avatarUrl))
+        ).catch(() => {});
+
+        throw error;
+    }
 }
