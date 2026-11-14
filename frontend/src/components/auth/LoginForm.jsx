@@ -2,6 +2,7 @@ import { useState } from "react"
 import hideIcon from '../../assets/hide.svg'
 import showIcon from '../../assets/show.svg'
 import Button from "../ui/Button";
+import Input from "../ui/Input";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -70,34 +71,34 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-            <p className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-300">
+            <p className="mb-4 rounded-xl border border-danger-line bg-danger-soft p-3 text-sm text-danger   ">
                 {error}
             </p>
         )}
 
         {sucess && (
-            <p className="mb-4 rounded-xl border border-teal-200 bg-teal-50 p-3 text-sm text-teal-700 dark:border-teal-900/50 dark:bg-teal-950/50 dark:text-teal-300">
+            <p className="mb-4 rounded-xl border border-success-line bg-selected p-3 text-sm text-success   ">
                 Login successful!
             </p>
         )}
        
-        <input
+        <Input
             type="email"
             placeholder="Enter your email"
             value={email}
             onChange={handleChange}
-            className="w-full rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+            className="w-full "
         />
         <div className="relative">
-            <input type={showPassword ? "text" : "password"}
+            <Input type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={handlePass}
-                className="w-full rounded-xl border border-zinc-300 bg-zinc-50 py-3 pl-4 pr-11 text-sm text-zinc-900 placeholder-zinc-400 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-600/20 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-500 dark:focus:border-teal-500 dark:focus:bg-zinc-800 dark:focus:ring-teal-500/20"
+                className="w-full "
             />
             <button type="button"
                 onClick={() => setshowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-zinc-500 transition hover:bg-zinc-200/70 dark:hover:bg-zinc-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-muted transition hover:bg-soft "
             >
                 <img src={showPassword ? hideIcon : showIcon} alt="" className="h-5 w-5 opacity-70 hover:opacity-100 dark:brightness-0 dark:invert dark:opacity-90"/>
             </button>
@@ -105,6 +106,7 @@ export default function LoginForm() {
         <Button type="submit" disabled={loading} className="w-full"
         >
             {loading ? "login in.." : "Login"}</Button>
+        
     </form>
   )
 }
