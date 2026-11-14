@@ -4,7 +4,7 @@ import GroupFilters from "./GroupFilters";
 import GroupList from "./GroupList";
 import GroupPagination from "./GroupPagination";
 
-export default function GroupBrowser() {
+export default function GroupBrowser({ onDetails, onChanged }) {
   const [filters, setFilters] = useState({
     scope: "discover",
     page: 1,
@@ -20,7 +20,9 @@ export default function GroupBrowser() {
 
   return (
     <section className="space-y-4" aria-labelledby="discover-groups-title">
-      <h3 id="discover-groups-title" className="text-xl font-semibold">Discover Groups</h3>
+      <h3 id="discover-groups-title" className="text-xl font-semibold">
+        Discover Groups
+      </h3>
       <GroupFilters filters={filters} onChange={changeFilter} />
       <GroupList
         groups={groups}
@@ -28,6 +30,8 @@ export default function GroupBrowser() {
         error={error}
         scope={filters.scope}
         onRetry={reload}
+        onDetails={onDetails}
+        onChanged={onChanged}
       />
       <GroupPagination
         pagination={pagination}

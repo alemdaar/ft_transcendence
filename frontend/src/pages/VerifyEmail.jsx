@@ -151,7 +151,6 @@ export default function VerifyEmail() {
           <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Verifying..." : "Verify email"}
           </Button>
-          {/* Resend code */}
 
           <p className="text-xs text-muted ">
             Didn't receive it?{" "}
@@ -165,7 +164,6 @@ export default function VerifyEmail() {
             </button>
           </p>
 
-          {/* end here */}
           <p className="text-center text-sm text-muted ">
             Wrong email?{" "}
             <Link

@@ -1,6 +1,14 @@
+import GroupActions from "./GroupActions";
+import CardDescription from "../ui/CardDescription";
 import { MapPin, Users } from "lucide-react";
 
-export default function GroupCard({ group }) {
+export default function GroupCard({
+  group,
+  scope,
+  onDetails,
+  onChanged,
+  expanded = false,
+}) {
   const created = group.createdAt ? new Date(group.createdAt) : null;
   return (
     <article className="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
@@ -15,10 +23,12 @@ export default function GroupCard({ group }) {
           </span>
         )}
       </div>
-      <h3 className="break-words text-lg font-semibold">{group.name}</h3>
-      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-muted">
-        {group.description}
-      </p>
+      <h3
+        className={`break-words text-lg font-semibold leading-7 ${expanded ? "" : "truncate h-7"}`}
+      >
+        {group.name}
+      </h3>
+      <CardDescription expanded={expanded}>{group.description}</CardDescription>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-xs text-muted">
         <span className="flex items-center gap-1.5">
           <Users size={15} />
@@ -35,6 +45,12 @@ export default function GroupCard({ group }) {
           </time>
         )}
       </div>
+      <GroupActions
+        group={group}
+        scope={scope}
+        onDetails={onDetails}
+        onChanged={onChanged}
+      />
     </article>
   );
 }

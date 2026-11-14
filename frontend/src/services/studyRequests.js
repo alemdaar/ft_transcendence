@@ -1,4 +1,13 @@
+import { mockEnabled } from "../mocks/config";
+import { mockUser } from "../mocks/data";
+import { readDemo, saveDemo } from "../mocks/store";
 export async function getStudyRequests(signal) {
+  if (mockEnabled) {
+    signal?.throwIfAborted();
+    return readDemo().requests.filter(
+      (request) => request.asker_id !== mockUser.id,
+    );
+  }
   const response = await fetch("/peer-request", {
     method: "GET",
     credentials: "include",
@@ -7,7 +16,6 @@ export async function getStudyRequests(signal) {
   });
   const data = await response.json().catch(() => null);
 
-  
   if (
     (response.ok || response.status === 404) &&
     data?.message === "No Posts Created Yet"
@@ -28,6 +36,20 @@ export async function getStudyRequests(signal) {
 }
 
 export async function createStudyRequest({ topic, mode, description }) {
+  if (mockEnabled) {
+    const data = readDemo();
+    data.requests.push({
+      id: Math.max(0, ...data.requests.map((request) => request.id)) + 1,
+      asker_id: mockUser.id,
+      topic,
+      mode,
+      description,
+      campus: mockUser.campus,
+      status: "open",
+    });
+    saveDemo(data);
+    return { message: "Request created." };
+  }
   const response = await fetch("/peer-request", {
     method: "POST",
     credentials: "include",

@@ -2,7 +2,16 @@ import Button from "../ui/Button";
 import GroupCard from "./GroupCard";
 import GroupEmptyState from "./GroupEmptyState";
 
-export default function GroupList({ groups, loading, error, scope, onRetry, onCreate }) {
+export default function GroupList({
+  groups,
+  loading,
+  error,
+  scope,
+  onRetry,
+  onCreate,
+  onDetails,
+  onChanged,
+}) {
   if (loading)
     return (
       <p role="status" className="py-12 text-center text-sm text-muted">
@@ -22,13 +31,17 @@ export default function GroupList({ groups, loading, error, scope, onRetry, onCr
       </div>
     );
   if (groups.length === 0)
-    return (
-      <GroupEmptyState scope={scope} onCreate={onCreate} />
-    );
+    return <GroupEmptyState scope={scope} onCreate={onCreate} />;
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {groups.map((group) => (
-        <GroupCard key={group.id} group={group} />
+        <GroupCard
+          key={group.id}
+          group={group}
+          scope={scope}
+          onDetails={onDetails}
+          onChanged={onChanged}
+        />
       ))}
     </div>
   );

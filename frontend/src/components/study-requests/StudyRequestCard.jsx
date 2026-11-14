@@ -1,4 +1,5 @@
 import { Clock, MapPin, Monitor } from "lucide-react";
+import CardDescription from "../ui/CardDescription";
 
 export default function StudyRequestCard({ request }) {
   return (
@@ -27,10 +28,10 @@ export default function StudyRequestCard({ request }) {
           </span>
         )}
       </div>
-      <h4 className="break-words text-lg font-semibold">{request.topic}</h4>
-      <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-muted">
-        {request.description}
-      </p>
+      <h4 className="truncate h-7 break-words text-lg font-semibold leading-7">
+        {request.topic}
+      </h4>
+      <CardDescription>{request.description}</CardDescription>
     </article>
   );
 }

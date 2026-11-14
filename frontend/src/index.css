@@ -178,7 +178,6 @@
   background: transparent;
 }
 
-/* Shared search/filter treatment for the study-request and group toolbars. */
 .filter-input {
   background-color: var(--surface);
   border: 1px solid color-mix(in srgb, var(--muted) 28%, var(--surface));
