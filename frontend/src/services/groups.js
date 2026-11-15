@@ -1,3 +1,4 @@
+import { authorizedFetch } from './authorizedFetch';
 import { mockEnabled } from "../mocks/config";
 import { listGroups, createDemoGroup, groupAction } from "../mocks/groups";
 async function readResponse(response) {
@@ -24,7 +25,7 @@ export async function getGroups(
     if (search.trim()) query.set("search", search.trim());
     if (sort === "oldest") query.set("sort", sort);
   }
-  const response = await fetch("/groups?" + query, {
+  const response = await authorizedFetch("/groups?" + query, {
     method: "GET",
     credentials: "include",
     headers: { Accept: "application/json" },
@@ -39,7 +40,7 @@ export async function getGroups(
 
 export async function createGroup(group) {
   if (mockEnabled) return createDemoGroup(group);
-  const response = await fetch("/groups", {
+  const response = await authorizedFetch("/groups", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
@@ -55,7 +56,7 @@ async function groupRequest(id, method, suffix = "", signal) {
     signal?.throwIfAborted();
     return groupAction(id, method, suffix);
   }
-  const response = await fetch("/groups/" + Number(id) + suffix, {
+  const response = await authorizedFetch("/groups/" + Number(id) + suffix, {
     method,
     credentials: "include",
     headers: { Accept: "application/json" },
@@ -74,3 +75,23 @@ export const joinGroup = (id) => groupRequest(id, "POST", "/join");
 export const requestGroupJoin = (id) =>
   groupRequest(id, "POST", "/join-request");
 export const deleteGroup = (id) => groupRequest(id, "DELETE");
+
+export async function getMemberGroup(id, signal) {
+  if (!Number.isSafeInteger(Number(id)) || Number(id) <= 0)
+    throw new Error("Invalid group ID.");
+  let page = 1;
+  while (true) {
+    signal?.throwIfAborted();
+    const result = await getGroups({ scope: "mine", page }, signal);
+    const membership = result.data.find(
+      (group) => String(group.id) === String(id),
+    );
+    if (membership) {
+      const details = await getGroup(id, signal);
+      return { ...membership, ...details };
+    }
+    if (!result.pagination.hasNextPage)
+      throw new Error("Only group members can view group details.");
+    page += 1;
+  }
+}

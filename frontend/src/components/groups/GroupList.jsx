@@ -9,7 +9,6 @@ export default function GroupList({
   scope,
   onRetry,
   onCreate,
-  onDetails,
   onChanged,
 }) {
   if (loading)
@@ -39,7 +38,6 @@ export default function GroupList({
           key={group.id}
           group={group}
           scope={scope}
-          onDetails={onDetails}
           onChanged={onChanged}
         />
       ))}

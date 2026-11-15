@@ -1,3 +1,4 @@
+import { authorizedFetch } from "./authorizedFetch";
 import { mockEnabled } from "../mocks/config";
 import { mockUser } from "../mocks/data";
 import { readDemo, saveDemo } from "../mocks/store";
@@ -8,7 +9,7 @@ export async function getStudyRequests(signal) {
       (request) => request.asker_id !== mockUser.id,
     );
   }
-  const response = await fetch("/peer-request", {
+  const response = await authorizedFetch("/peer-request", {
     method: "GET",
     credentials: "include",
     headers: { Accept: "application/json" },
@@ -50,7 +51,7 @@ export async function createStudyRequest({ topic, mode, description }) {
     saveDemo(data);
     return { message: "Request created." };
   }
-  const response = await fetch("/peer-request", {
+  const response = await authorizedFetch("/peer-request", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },

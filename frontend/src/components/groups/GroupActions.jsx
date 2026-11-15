@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import Button from "../ui/Button";
 import { joinGroup, requestGroupJoin } from "../../services/groups";
 
-export default function GroupActions({ group, scope, onDetails, onChanged }) {
+export default function GroupActions({ group, scope, onChanged }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const inFlight = useRef(false);
@@ -39,15 +39,6 @@ export default function GroupActions({ group, scope, onDetails, onChanged }) {
         </p>
       )}
       <div className="flex flex-wrap items-center justify-end gap-2">
-        {onDetails && (
-          <Button
-            variant="ghost"
-            disabled={loading}
-            onClick={() => onDetails(group, scope)}
-          >
-            Details
-          </Button>
-        )}
         {scope === "discover" && ["general", "team"].includes(group.type) && (
           <Button disabled={loading} aria-busy={loading} onClick={handleJoin}>
             {loading

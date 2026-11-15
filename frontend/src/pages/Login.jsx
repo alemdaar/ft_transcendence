@@ -1,3 +1,4 @@
+import Intra42Button from '../components/auth/Intra42Button';
 import LoginForm from "../components/auth/LoginForm.jsx";
 import { Link } from "react-router-dom";
 import hat from "../assets/hat.svg";
@@ -25,6 +26,7 @@ export default function Login() {
         </div>
 
         <LoginForm />
+        <Intra42Button />
 
         <p className="mt-6 text-center text-sm text-muted ">
           Don't have an account?{" "}

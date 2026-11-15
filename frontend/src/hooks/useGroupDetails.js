@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getGroup } from "../services/groups";
+import { getMemberGroup } from "../services/groups";
 
 export default function useGroupDetails(id) {
   const [state, setState] = useState({ group: null, loading: true, error: "" });
@@ -9,7 +9,7 @@ export default function useGroupDetails(id) {
     async function load() {
       setState({ group: null, loading: true, error: "" });
       try {
-        const group = await getGroup(id, controller.signal);
+        const group = await getMemberGroup(id, controller.signal);
         if (!controller.signal.aborted)
           setState({ group, loading: false, error: "" });
       } catch (error) {

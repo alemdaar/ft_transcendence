@@ -1,3 +1,4 @@
+import Intra42Button from '../components/auth/Intra42Button';
 import RegisterForm from "../components/auth/RegisterForm.jsx";
 import { Link } from "react-router-dom";
 import hat from "../assets/hat.svg";
@@ -25,6 +26,7 @@ export default function Register() {
         </div>
 
         <RegisterForm />
+        <Intra42Button />
 
         <p className="mt-6 text-center text-sm text-muted ">
           Already have an account?{" "}

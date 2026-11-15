@@ -26,7 +26,7 @@ function SidebarLinks({ onNavigate }) {
       <NavLink
         key={label}
         to={path}
-        end
+        end={path === "/"}
         onClick={onNavigate}
         className={({ isActive }) =>
           `sidebar-link ${isActive ? "sidebar-link-active" : ""}`
@@ -50,7 +50,7 @@ export default function Layout({ themeButton }) {
   const menu = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const title =
-    navigation.find((item) => item.path === location.pathname)?.label ||
+    navigation.find((item) => item.path === location.pathname || (item.path === "/groups" && location.pathname.startsWith("/groups/")))?.label ||
     "StudyPeer";
 
   useEffect(() => {

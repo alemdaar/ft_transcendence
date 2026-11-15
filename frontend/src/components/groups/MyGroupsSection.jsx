@@ -4,7 +4,7 @@ import GroupList from "./GroupList";
 import GroupPagination from "./GroupPagination";
 import { Clock, Users } from "lucide-react";
 
-export default function MyGroupsSection({ onCreate, onDetails, onChanged }) {
+export default function MyGroupsSection({ onCreate, onChanged }) {
   const [scope, setScope] = useState("mine");
   const [page, setPage] = useState(1);
   const { groups, pagination, loading, error, reload } = useGroups({
@@ -57,7 +57,6 @@ export default function MyGroupsSection({ onCreate, onDetails, onChanged }) {
         scope={scope}
         onRetry={reload}
         onCreate={onCreate}
-        onDetails={onDetails}
         onChanged={onChanged}
       />
       <GroupPagination

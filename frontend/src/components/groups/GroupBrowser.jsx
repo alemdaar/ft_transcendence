@@ -4,7 +4,7 @@ import GroupFilters from "./GroupFilters";
 import GroupList from "./GroupList";
 import GroupPagination from "./GroupPagination";
 
-export default function GroupBrowser({ onDetails, onChanged }) {
+export default function GroupBrowser({ onChanged }) {
   const [filters, setFilters] = useState({
     scope: "discover",
     page: 1,
@@ -30,7 +30,6 @@ export default function GroupBrowser({ onDetails, onChanged }) {
         error={error}
         scope={filters.scope}
         onRetry={reload}
-        onDetails={onDetails}
         onChanged={onChanged}
       />
       <GroupPagination

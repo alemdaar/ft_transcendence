@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import GroupActions from "./GroupActions";
 import CardDescription from "../ui/CardDescription";
 import { MapPin, Users } from "lucide-react";
@@ -5,13 +6,14 @@ import { MapPin, Users } from "lucide-react";
 export default function GroupCard({
   group,
   scope,
-  onDetails,
+
   onChanged,
   expanded = false,
 }) {
   const created = group.createdAt ? new Date(group.createdAt) : null;
   return (
-    <article className="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
+    <article className={`relative min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6 ${scope === "mine" ? "transition hover:border-highlight focus-within:ring-2 focus-within:ring-highlight" : ""}`}>
+      {scope === 'mine' && <Link to={'/groups/' + group.id} aria-label={'Open ' + group.name} className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-highlight" />}
       <div className="mb-4 flex flex-wrap gap-2">
         <span className="badge bg-selected text-highlight">
           {group.type === "team" ? "Team" : "General"}
@@ -48,7 +50,6 @@ export default function GroupCard({
       <GroupActions
         group={group}
         scope={scope}
-        onDetails={onDetails}
         onChanged={onChanged}
       />
     </article>
