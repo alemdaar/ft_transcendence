@@ -128,6 +128,67 @@ test("PostgreSQL authentication integration", async t => {
     }
     const bearer = token => ({ Authorization: `Bearer ${token}` });
 
+    await t.test("batch user lookup authenticates and returns public profiles in requested order", async () => {
+        const first = await create("batchone");
+        const second = await create("batchtwo");
+        await prisma.user.update({
+            where: { id: second.id },
+            data: { avatarUrl: "https://example.com/batch-avatar.jpg" }
+        });
+
+        const cookie = await loginAs("batchone");
+        const token = await accessToken(cookie);
+        const body = { ids: [second.id, 2147483647, first.id, second.id] };
+
+        assert.equal((await request("/users/batch", { body })).status, 401);
+        assert.equal((await request("/users/batch", {
+            body, headers: bearer("invalid-token")
+        })).status, 401);
+
+        const response = await request("/users/batch", {
+            body, headers: bearer(token)
+        });
+        assert.equal(response.status, 200);
+        assert.deepEqual(response.data, [
+            { id: second.id, username: "batchtwo", avatarUrl: "https://example.com/batch-avatar.jpg" },
+            { id: first.id, username: "batchone", avatarUrl: null }
+        ]);
+
+        const viaSession = await request("/users/batch", {
+            body: { ids: [first.id] }, cookie
+        });
+        assert.equal(viaSession.status, 200);
+        assert.deepEqual(viaSession.data, [
+            { id: first.id, username: "batchone", avatarUrl: null }
+        ]);
+    });
+
+    await t.test("batch user lookup rejects invalid IDs and supports empty lists", async () => {
+        const cookie = await loginAs("batchone");
+        const token = await accessToken(cookie);
+        const headers = bearer(token);
+        const invalidBodies = [
+            {},
+            { ids: "1" },
+            { ids: [0] },
+            { ids: [-1] },
+            { ids: [1.5] },
+            { ids: ["1"] },
+            { ids: [2147483648] },
+            { ids: Array(101).fill(1) },
+            { ids: [], unexpected: true }
+        ];
+        for (const body of invalidBodies) {
+            const response = await request("/users/batch", { headers, body });
+            assert.equal(response.status, 400, JSON.stringify(body).slice(0, 100));
+        }
+        const empty = await request("/users/batch", {
+            headers, body: { ids: [] }
+        });
+        assert.equal(empty.status, 200);
+        assert.deepEqual(empty.data, []);
+    });
+
     await t.test("avatar upload requires authentication", async () => {
         const form = new FormData();
 

@@ -34,6 +34,7 @@ Requests with bodies use `Content-Type: application/json`. Existing registration
 | GET | `/auth/42` | Starts 42 OAuth |
 | GET | `/auth/42/callback` | 42 callback with code and session-bound state |
 | GET | `/auth/me` | Session cookie or `Authorization: Bearer <token>` |
+| POST | `/users/batch` | Session or user Bearer JWT; `{ "ids": [12, 25, 38] }` (0–100 positive 32-bit integer IDs) |
 | PATCH | `/auth/me` | Session; one or more of `{displayname, location, avatarUrl}` |
 | POST | `/auth/logout` | Session; destroys current session |
 | POST | `/auth/token` | Session; returns a JWT valid for 900 seconds |
@@ -41,6 +42,29 @@ Requests with bodies use `Content-Type: application/json`. Existing registration
 | POST | `/auth/forgot-password` | `{email}`; generic response for unknown accounts |
 | POST | `/auth/reset-password` | `{token, password, confirmpassword}` |
 | DELETE | `/auth/me` | Session; `{confirmation: "DELETE", currentPassword}` |
+
+### Batch user lookup (B2/B3)
+
+`POST /users/batch` resolves existing local user IDs to the minimum public profile information required by other services. The caller supplies a session cookie or a valid `Authorization: Bearer <user JWT>` header.
+
+Request:
+
+```json
+{"ids":[12,25,38]}
+```
+
+Successful response (`200`) is a **JSON array**, not a `{ users: ... }` wrapper:
+
+```json
+[
+  {"id":12,"username":"student12","avatarUrl":"https://cdn.intra.42.fr/example.jpg"},
+  {"id":25,"username":"student25","avatarUrl":"/auth/avatars/25-example.webp"}
+]
+```
+
+The response contains only `id`, `username`, and `avatarUrl` (which can be `null`). Unknown IDs are omitted; duplicate IDs are returned once; the remaining entries follow the first-occurrence order of the input IDs. An empty list returns `[]`. Invalid bodies, non-integer, nonpositive, out-of-range IDs, or more than 100 entries return `400`. Unauthenticated or invalid-token requests return `401`.
+
+This endpoint verifies **user** authentication, not the identity of B2/B3 as services. Calling services must independently enforce permissions (for example, room membership) before requesting or exposing other users' data. Local `avatarUrl` paths are relative to the User Service's public `/auth` route; route them through the same frontend proxy or use the appropriate public origin.
 
 Profile edits accept display names of 1–80 characters, locations up to 80 characters or `null`, and HTTPS avatar URLs up to 2048 characters or `null`. Identity fields, campus and points cannot be changed through this API.
 
