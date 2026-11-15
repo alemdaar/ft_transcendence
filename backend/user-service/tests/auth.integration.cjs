@@ -1,7 +1,9 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const { once } = require("node:events");
-const { readdir, readFile } = require("node:fs/promises");
+const { readdir, readFile, mkdtemp, rm } = require("node:fs/promises");
+const os = require("node:os");
+const path = require("node:path");
 const crypto = require("node:crypto");
 const { Client } = require("pg");
 require("dotenv").config({ quiet: true });
@@ -71,6 +73,18 @@ test("PostgreSQL authentication integration", async t => {
         get42UserByLogin: async login => { if (lookupHook) await lookupHook(login); return profile(login); },
         fetch42: async path => new Response(JSON.stringify(path === "/oauth/token" ? { access_token: "test-provider-token" } : oauthProfile), { status: 200, headers: { "Content-Type": "application/json" } })
     });
+    const avatarTestDir = await mkdtemp(
+        path.join(os.tmpdir(), "user-avatar-tests-")
+    );
+
+    process.env.AVATAR_UPLOAD_DIR = avatarTestDir;
+
+    t.after(async () => {
+        await rm(avatarTestDir, {
+            recursive: true,
+            force: true
+        });
+    });
     const app = require("../src/app.ts").default;
     prisma = require("../src/lib/prisma.ts").prisma;
     store = require("../src/config/session.ts").sessionStore;
@@ -113,6 +127,269 @@ test("PostgreSQL authentication integration", async t => {
         return result.data.accessToken;
     }
     const bearer = token => ({ Authorization: `Bearer ${token}` });
+
+    await t.test("avatar upload requires authentication", async () => {
+        const form = new FormData();
+
+        form.set(
+            "avatar",
+            new Blob(["test"], { type: "image/png" }),
+            "avatar.png"
+        );
+
+        const response = await fetch(`${base}/auth/me/avatar`, {
+            method: "POST",
+            body: form
+        });
+
+        assert.equal(response.status, 401);
+    });
+
+    await t.test("authenticated user can upload avatar", async () => {
+        await create("avatarstudent");
+        const cookie = await loginAs("avatarstudent");
+
+        const sharp = require("sharp");
+        const image = await sharp({
+            create: {
+                width: 20,
+                height: 20,
+                channels: 3,
+                background: "#00AA99"
+            }
+        }).png().toBuffer();
+
+        const form = new FormData();
+        form.set("avatar", new Blob([image], {
+            type: "image/png"
+        }), "avatar.png");
+
+        const response = await fetch(`${base}/auth/me/avatar`, {
+            method: "POST",
+            headers: { Cookie: cookie },
+            body: form
+        });
+
+        const data = await response.json();
+
+        assert.equal(response.status, 200);
+        assert.ok(data.user.avatarUrl.startsWith("/auth/avatars/"));
+
+        const imageResponse = await fetch(
+            `${base}${data.user.avatarUrl}`
+        );
+
+        assert.equal(imageResponse.status, 200);
+        assert.match(
+            imageResponse.headers.get("content-type"),
+            /image\/webp/
+        );
+        // Remove test image from local storage.
+        const { unlink } = require("node:fs/promises");
+        const path = require("node:path");
+        const { avatarDir } = require("../src/services/avatar.service.ts");
+
+        await unlink(path.join(
+            avatarDir,
+            path.basename(data.user.avatarUrl)
+        ));
+    });
+
+    await t.test("avatar replacement removes old image", async t => {
+        const sharp = require("sharp");
+        const path = require("node:path");
+        const { access, unlink } = require("node:fs/promises");
+        const { avatarDir } = require("../src/services/avatar.service.ts");
+
+        await create("avatarreplace");
+        const cookie = await loginAs("avatarreplace");
+        const urls = [];
+
+        t.after(async () => {
+            for (const url of urls) {
+                await unlink(path.join(avatarDir, path.basename(url)))
+                    .catch(() => {});
+            }
+        });
+
+        async function upload(color) {
+            const image = await sharp({
+                create: {
+                    width: 20, height: 20, channels: 3,
+                    background: color
+                }
+            }).png().toBuffer();
+
+            const form = new FormData();
+            form.set("avatar", new Blob([image], {
+                type: "image/png"
+            }), "avatar.png");
+
+            const response = await fetch(`${base}/auth/me/avatar`, {
+                method: "POST",
+                headers: { Cookie: cookie },
+                body: form
+            });
+
+            assert.equal(response.status, 200);
+
+            const { user } = await response.json();
+            urls.push(user.avatarUrl);
+            return user.avatarUrl;
+        }
+
+        const first = await upload("#ff0000");
+        const second = await upload("#0000ff");
+
+        assert.notEqual(first, second);
+
+        await assert.rejects(
+            access(path.join(avatarDir, path.basename(first))),
+            { code: "ENOENT" }
+        );
+
+        await access(path.join(avatarDir, path.basename(second)));
+
+        assert.equal((await fetch(`${base}${first}`)).status, 404);
+        assert.equal((await fetch(`${base}${second}`)).status, 200);
+    });
+
+    await t.test("invalid avatar images are rejected", async () => {
+        await create("avatarinvalid");
+        const cookie = await loginAs("avatarinvalid");
+
+        const form = new FormData();
+        form.set(
+            "avatar",
+            new Blob(["not a real image"], { type: "image/png" }),
+            "fake.png"
+        );
+
+        const response = await fetch(`${base}/auth/me/avatar`, {
+            method: "POST",
+            headers: { Cookie: cookie },
+            body: form
+        });
+
+        assert.equal(response.status, 400);
+    });
+
+    await t.test("avatar uploads larger than 3 MB are rejected", async () => {
+        await create("avatarlarge");
+        const cookie = await loginAs("avatarlarge");
+
+        const form = new FormData();
+
+        form.set(
+            "avatar",
+            new Blob(
+                [Buffer.alloc(3 * 1024 * 1024 + 1)],
+                { type: "image/png" }
+            ),
+            "large.png"
+        );
+
+        const response = await fetch(`${base}/auth/me/avatar`, {
+            method: "POST",
+            headers: { Cookie: cookie },
+            body: form
+        });
+
+        assert.equal(response.status, 413);
+    });
+
+    async function uploadCleanupTestAvatar(cookie) {
+        const sharp = require("sharp");
+
+        const image = await sharp({
+            create: {
+                width: 20,
+                height: 20,
+                channels: 3,
+                background: "#0099ff"
+            }
+        }).png().toBuffer();
+
+        const form = new FormData();
+
+        form.set(
+            "avatar",
+            new Blob([image], { type: "image/png" }),
+            "test.png"
+        );
+
+        const response = await fetch(`${base}/auth/me/avatar`, {
+            method: "POST",
+            headers: { Cookie: cookie },
+            body: form
+        });
+
+        assert.equal(response.status, 200);
+
+        const data = await response.json();
+        return data.user.avatarUrl;
+    }
+
+    await t.test("account deletion removes local avatar", async () => {
+        await create("avatardelete");
+        const cookie = await loginAs("avatardelete");
+
+        const avatarUrl = await uploadCleanupTestAvatar(cookie);
+
+        const { avatarDir } = require("../src/services/avatar.service.ts");
+        const { access } = require("node:fs/promises");
+
+        const filePath = path.join(avatarDir, path.basename(avatarUrl));
+
+        await access(filePath);
+
+        const response = await request("/auth/me", {
+            method: "DELETE",
+            cookie,
+            body: {
+                confirmation: "DELETE",
+                currentPassword: password
+            }
+        });
+
+        assert.equal(response.status, 200);
+
+        await assert.rejects(access(filePath), {
+            code: "ENOENT"
+        });
+    });
+
+    await t.test("profile avatar URL change removes old local avatar", async () => {
+        await create("avatarprofile");
+        const cookie = await loginAs("avatarprofile");
+
+        const avatarUrl = await uploadCleanupTestAvatar(cookie);
+
+        const { avatarDir } = require("../src/services/avatar.service.ts");
+        const { access } = require("node:fs/promises");
+
+        const filePath = path.join(avatarDir, path.basename(avatarUrl));
+
+        await access(filePath);
+
+        const response = await request("/auth/me", {
+            method: "PATCH",
+            cookie,
+            body: {
+                avatarUrl: "https://example.com/new-avatar.png"
+            }
+        });
+
+        assert.equal(response.status, 200);
+        assert.equal(
+            response.data.user.avatarUrl,
+            "https://example.com/new-avatar.png"
+        );
+
+        await assert.rejects(access(filePath), {
+            code: "ENOENT"
+        });
+    });
 
     await t.test("JSON errors, origin checks and anonymous access", async () => {
         assert.equal((await request("/auth/me")).status, 401);

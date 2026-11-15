@@ -1,12 +1,14 @@
 
 import crypto from "node:crypto";
 import path from "node:path";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, unlink } from "node:fs/promises";
 import sharp from "sharp";
 import { HttpError } from "../lib/http-error";
 
+
 export const avatarDir = path.resolve(
-    process.env.AVATAR_UPLOAD_DIR ?? "uploads/avatars"
+    process.env.AVATAR_UPLOAD_DIR ??
+    path.join(__dirname, "..", "..", "uploads", "avatars")
 );
 
 export async function saveAvatar(
@@ -48,4 +50,27 @@ export async function saveAvatar(
     );
 
     return `/auth/avatars/${filename}`;
+}
+
+export async function removeLocalAvatar(
+    avatarUrl: string | null | undefined,
+    userId: number
+): Promise<void> {
+    if (!avatarUrl) return;
+
+    const filename = path.basename(avatarUrl);
+
+    const pattern = new RegExp(
+        `^${userId}-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.webp$`
+    );
+
+    if (
+        avatarUrl !== `/auth/avatars/${filename}` ||
+        !pattern.test(filename)
+    ) return;
+
+    await unlink(path.join(avatarDir, filename))
+        .catch(error => {
+            if (error.code !== "ENOENT") throw error;
+        });
 }
