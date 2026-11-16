@@ -1,27 +1,8 @@
-import { clearAccessToken, getAccessToken } from './accessToken';
+import { clearAccessToken, getAccessToken } from "./accessToken";
 import { mockEnabled } from "../mocks/config";
-import { mockUser } from "../mocks/data";
+import { mockAuthRequest } from "../mocks/auth";
 async function authRequest(path, { body, signal } = {}) {
-  if (mockEnabled) {
-    signal?.throwIfAborted();
-    if (path === "me")
-      return {
-        user: sessionStorage.getItem("studypeer-demo-signed-out")
-          ? null
-          : mockUser,
-      };
-    if (path === "login") {
-      sessionStorage.removeItem("studypeer-demo-signed-out");
-      return { user: mockUser };
-    }
-    if (path === "logout") {
-      sessionStorage.setItem("studypeer-demo-signed-out", "true");
-      return { message: "Signed out of demo." };
-    }
-    throw new Error(
-      "Registration and email verification are unavailable in demo mode.",
-    );
-  }
+  if (mockEnabled) return mockAuthRequest(path, signal);
   let response;
   try {
     response = await fetch("/auth/" + path, {
@@ -59,24 +40,44 @@ async function authRequest(path, { body, signal } = {}) {
 
 export async function getCurrentUser(signal) {
   try {
-    const user = (await authRequest('me', { signal })).user;
+    const user = (await authRequest("me", { signal })).user;
     if (user && !mockEnabled) await getAccessToken();
     if (!user) clearAccessToken();
-    return user;
+    return user
+      ? {
+          ...user,
+          authProvider: mockEnabled
+            ? user.authProvider
+            : user.authProvider ||
+              sessionStorage.getItem("studypeer-login-method") ||
+              "password",
+        }
+      : null;
   } catch (error) {
-    if (error.status === 401) { clearAccessToken(); return null; }
+    if (error.status === 401) {
+      clearAccessToken();
+      return null;
+    }
     throw error;
   }
 }
 export async function login(email, password) {
   clearAccessToken();
-  const data = await authRequest('login', { body: { email, password } });
+  const data = await authRequest("login", { body: { email, password } });
   if (!mockEnabled) await getAccessToken();
-  return data;
+  sessionStorage.setItem("studypeer-login-method", "password");
+  return {
+    ...data,
+    user: {
+      ...data.user,
+      authProvider: mockEnabled ? data.user.authProvider : "password",
+    },
+  };
 }
 export async function logout() {
-  const data = await authRequest('logout', { body: {} });
+  const data = await authRequest("logout", { body: {} });
   clearAccessToken();
+  sessionStorage.removeItem("studypeer-login-method");
   return data;
 }
 export const register = (data) => authRequest("register", { body: data });

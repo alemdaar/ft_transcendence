@@ -1,6 +1,6 @@
 import StudySession from './pages/StudySession';
 import GroupDetails from "./pages/GroupDetails";
-import DemoBanner from "./components/ui/DemoBanner";
+import DemoBanner from "./mocks/DemoBanner";
 import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";

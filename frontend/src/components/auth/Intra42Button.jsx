@@ -23,7 +23,7 @@ export default function Intra42Button() {
           </p>
         </>
       ) : (
-        <a href="/auth/42" className="btn-secondary w-full">
+        <a href="/auth/42" onClick={() => sessionStorage.setItem("studypeer-login-method", "42")} className="btn-secondary w-full">
           Continue with 42 <ArrowUpRight size={16} />
         </a>
       )}

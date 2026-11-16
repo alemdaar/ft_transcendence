@@ -1,14 +1,13 @@
 import { authorizedFetch } from "./authorizedFetch";
 import { mockEnabled } from "../mocks/config";
-import { mockUser } from "../mocks/data";
-import { readDemo, saveDemo } from "../mocks/store";
+
+import {
+  listDemoRequests,
+  createDemoRequest,
+  claimDemoRequest,
+} from "../mocks/studyRequests";
 export async function getStudyRequests(signal) {
-  if (mockEnabled) {
-    signal?.throwIfAborted();
-    return readDemo().requests.filter(
-      (request) => request.asker_id !== mockUser.id,
-    );
-  }
+  if (mockEnabled) return listDemoRequests(signal);
   const response = await authorizedFetch("/peer-request", {
     method: "GET",
     credentials: "include",
@@ -37,20 +36,7 @@ export async function getStudyRequests(signal) {
 }
 
 export async function createStudyRequest({ topic, mode, description }) {
-  if (mockEnabled) {
-    const data = readDemo();
-    data.requests.push({
-      id: Math.max(0, ...data.requests.map((request) => request.id)) + 1,
-      asker_id: mockUser.id,
-      topic,
-      mode,
-      description,
-      campus: mockUser.campus,
-      status: "open",
-    });
-    saveDemo(data);
-    return { message: "Request created." };
-  }
+  if (mockEnabled) return createDemoRequest({ topic, mode, description });
   const response = await authorizedFetch("/peer-request", {
     method: "POST",
     credentials: "include",
@@ -68,16 +54,7 @@ export async function createStudyRequest({ topic, mode, description }) {
   return data;
 }
 
-export async function claimDemoRequest(id) {
-  if (!mockEnabled) throw new Error('The claim endpoint has not been configured yet.');
-  const data = readDemo();
-  const request = data.requests.find(item => item.id === Number(id));
-  if (!request) throw new Error('Request not found.');
-  if (request.asker_id === mockUser.id) throw new Error('You cannot claim your own request.');
-  if (request.status !== 'open') throw new Error('This request has already been claimed.');
-  request.helper_id = mockUser.id;
-  request.status = 'claimed';
-  request.updated_at = new Date().toISOString();
-  saveDemo(data);
-  return request;
+export async function claimRequest(id) {
+  if (mockEnabled) return claimDemoRequest(id);
+  throw new Error("The claim endpoint has not been configured yet.");
 }

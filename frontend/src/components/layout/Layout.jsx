@@ -1,3 +1,6 @@
+import HeaderAccount from '../auth/HeaderAccount';
+import AccountMenu from '../auth/AccountMenu';
+import useAuth from '../../hooks/useAuth';
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import {
@@ -47,6 +50,7 @@ function SidebarLinks({ onNavigate }) {
 
 export default function Layout({ themeButton }) {
   const location = useLocation();
+  const { user } = useAuth();
   const menu = useRef(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const title =
@@ -84,10 +88,7 @@ export default function Layout({ themeButton }) {
           <SidebarLinks />
         </nav>
         <div className="border-t border-line p-3">
-          <Link className="sidebar-link" to="/login">
-            <LogIn size={18} />
-            Sign in
-          </Link>
+          {user ? <AccountMenu /> : <Link className="sidebar-link" to="/login"><LogIn size={18} />Sign in</Link>}
         </div>
       </aside>
       <dialog
@@ -119,14 +120,7 @@ export default function Layout({ themeButton }) {
             <SidebarLinks onNavigate={() => setSidebarOpen(false)} />
           </nav>
           <div className="border-t border-line p-3">
-            <Link
-              to="/login"
-              className="sidebar-link"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <LogIn size={18} />
-              Sign in
-            </Link>
+            {user ? <AccountMenu onSignedOut={() => setSidebarOpen(false)} /> : <Link to="/login" className="sidebar-link" onClick={() => setSidebarOpen(false)}><LogIn size={18} />Sign in</Link>}
           </div>
         </div>
       </dialog>
@@ -146,9 +140,7 @@ export default function Layout({ themeButton }) {
           </div>
           <div className="flex items-center gap-2">
             {themeButton}
-            <Link to="/login" className="btn-secondary">
-              Sign in
-            </Link>
+            <HeaderAccount />
           </div>
         </header>
         <main className="app-content mx-auto max-w-5xl p-4 pb-24 lg:p-8">

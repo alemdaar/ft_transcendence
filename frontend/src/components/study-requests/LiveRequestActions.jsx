@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Eye, Hand } from 'lucide-react';
 import Button from '../ui/Button';
 import { mockEnabled } from '../../mocks/config';
-import { claimDemoRequest } from '../../services/studyRequests';
+import { claimRequest } from '../../services/studyRequests';
 
 export default function LiveRequestActions({ request, onDetails, onClaimed }) {
   const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ export default function LiveRequestActions({ request, onDetails, onClaimed }) {
   async function claim() {
     if (loading) return;
     setLoading(true); setError('');
-    try { await claimDemoRequest(request.id); onClaimed(); }
+    try { await claimRequest(request.id); onClaimed(); }
     catch (error) { setError(error.message); }
     finally { setLoading(false); }
   }
