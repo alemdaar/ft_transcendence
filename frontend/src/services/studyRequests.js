@@ -67,3 +67,17 @@ export async function createStudyRequest({ topic, mode, description }) {
   }
   return data;
 }
+
+export async function claimDemoRequest(id) {
+  if (!mockEnabled) throw new Error('The claim endpoint has not been configured yet.');
+  const data = readDemo();
+  const request = data.requests.find(item => item.id === Number(id));
+  if (!request) throw new Error('Request not found.');
+  if (request.asker_id === mockUser.id) throw new Error('You cannot claim your own request.');
+  if (request.status !== 'open') throw new Error('This request has already been claimed.');
+  request.helper_id = mockUser.id;
+  request.status = 'claimed';
+  request.updated_at = new Date().toISOString();
+  saveDemo(data);
+  return request;
+}

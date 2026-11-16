@@ -138,3 +138,47 @@ export const initialRequests = [
     status: "open",
   },
 ]);
+
+initialRequests.push(
+  {
+    id: 90,
+    asker_id: 1,
+    helper_id: null,
+    topic: "My React study request",
+    description: "I need help with React state and data fetching.",
+    mode: "online",
+    status: "open",
+    campus: "Rabat",
+  },
+  {
+    id: 91,
+    asker_id: 2,
+    helper_id: 1,
+    topic: "Pointers review session",
+    description: "Review pointers and memory allocation together.",
+    mode: "online",
+    status: "claimed",
+    campus: "Rabat",
+    meetup: null,
+  },
+  {
+    id: 92,
+    asker_id: 1,
+    helper_id: 3,
+    topic: "Minishell library meetup",
+    description: "Discuss parsing and execution for the minishell project.",
+    mode: "insite",
+    status: "pending",
+    campus: "Rabat",
+    meetup: {
+      id: 38,
+      request_id: 92,
+      specificSpot: "In the library",
+      meetTime: "1970-01-01T12:00:00.000Z",
+      asker_on_way: false,
+      asker_arrived: false,
+      helper_on_way: true,
+      helper_arrived: false,
+    },
+  },
+);

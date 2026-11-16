@@ -1,3 +1,5 @@
+import RequestDetailsModal from './RequestDetailsModal';
+import { Link } from 'react-router-dom';
 import { useState } from "react";
 import { RefreshCw } from "lucide-react";
 import Button from "../ui/Button";
@@ -10,6 +12,8 @@ export default function StudyRequestFeed({
   error,
   onRefresh,
 }) {
+  const [selected, setSelected] = useState(null);
+  const [claimed, setClaimed] = useState(false);
   const [search, setSearch] = useState("");
   const [campus, setCampus] = useState("");
   const normalizedCampus = campus.trim().replace(/\s+/g, ' ').toLowerCase();
@@ -44,6 +48,7 @@ export default function StudyRequestFeed({
         onSearchChange={setSearch}
         onCampusChange={setCampus}
       />
+      {claimed && <p role="status" className="text-sm text-highlight">Request claimed. <Link className="underline" to="/study-request?tab=activity">View My Activity</Link></p>}
       <StudyRequestList
         loading={loading}
         error={error}
@@ -51,7 +56,10 @@ export default function StudyRequestFeed({
         requests={visibleRequests}
         onRetry={onRefresh}
         onClearFilters={clearFilters}
+        onDetails={setSelected}
+        onClaimed={() => { setClaimed(true); onRefresh(); }}
       />
+      {selected && <RequestDetailsModal request={selected} onClose={() => setSelected(null)} />}
     </section>
   );
 }

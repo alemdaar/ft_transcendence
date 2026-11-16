@@ -1,3 +1,4 @@
+import StudySession from './pages/StudySession';
 import GroupDetails from "./pages/GroupDetails";
 import DemoBanner from "./components/ui/DemoBanner";
 import { useState } from "react";
@@ -39,7 +40,8 @@ export default function App() {
               <Route index element={<Home />} />
               <Route path="groups/:id" element={<GroupDetails />} />
               <Route path="groups" element={<Groups />} />
-              <Route path="study-request" element={<StudyRequests />} />
+              <Route path="sessions/:id" element={<StudySession />} />
+   <Route path="study-request" element={<StudyRequests />} />
             </Route>
             <Route path="login" element={authPage(<Login />)} />
             <Route path="register" element={authPage(<Register />)} />

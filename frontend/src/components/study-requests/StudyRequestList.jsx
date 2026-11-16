@@ -1,3 +1,4 @@
+import LiveRequestActions from './LiveRequestActions';
 import Button from "../ui/Button";
 import StudyRequestCard from "./StudyRequestCard";
 
@@ -8,6 +9,8 @@ export default function StudyRequestList({
   requests,
   onRetry,
   onClearFilters,
+  onDetails,
+  onClaimed,
 }) {
   if (loading) {
     return (
@@ -55,7 +58,9 @@ export default function StudyRequestList({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {requests.map((request) => (
-        <StudyRequestCard key={request.id} request={request} />
+        <StudyRequestCard key={request.id} request={request}>
+          <LiveRequestActions request={request} onDetails={onDetails} onClaimed={onClaimed} />
+        </StudyRequestCard>
       ))}
     </div>
   );

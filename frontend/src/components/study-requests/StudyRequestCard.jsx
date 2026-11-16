@@ -1,7 +1,7 @@
 import { Clock, MapPin, Monitor } from "lucide-react";
 import CardDescription from "../ui/CardDescription";
 
-export default function StudyRequestCard({ request }) {
+export default function StudyRequestCard({ request, children }) {
   return (
     <article className="min-w-0 rounded-2xl border border-line bg-surface p-5 sm:p-6">
       <div className="mb-4 flex flex-wrap gap-2">
@@ -32,6 +32,7 @@ export default function StudyRequestCard({ request }) {
         {request.topic}
       </h4>
       <CardDescription>{request.description}</CardDescription>
+      {children}
     </article>
   );
 }
