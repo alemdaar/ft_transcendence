@@ -9,8 +9,8 @@ export const validate = (schemaObj) => {
                 field: issue.path.join("."),
                 message: issue.message
             }))
-            // console.log({Error: errors.})
-            return res.status(400).json({ArrObj: errors});
+            // console.log({error: errors.})
+            return res.status(400).json({error: errors});
         }
         req.body = result.data;
         next();
@@ -24,7 +24,7 @@ export const validateParamId = (schemaObj) => {
     {
         const result = schemaObj.safeParse(req.params);
         if (!result.success)
-            return res.status(400).json({ Error: 'invalid id' });
+            return res.status(400).json({error: 'invalid id' });
         req.params = result.data;
         req.params.id = Number(req.params.id);
         next();

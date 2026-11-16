@@ -15,7 +15,7 @@ export const editPost = async (req, res) => {
                 description: description
             }
         })
-        return res.status(200).json({edited})
+        return res.status(200).json({succes: edited})
     } catch (error) {
         if (error.code === "P2025")
             return res.status(404).json({error: "NOT FOUND"})

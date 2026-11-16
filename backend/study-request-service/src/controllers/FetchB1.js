@@ -1,26 +1,39 @@
 
 export const FetchTest = async (req, res) => {
-    console.log('IN MY ENDPOINT')
-    const arr = [{"id": 12, "name": "x"}, {"id": 14, "name": "y"}]
-    return res.status(200).json({arr})
+    try {
+        const {ids} = req.body
+
+        const arr = [{"id": ids[0], "name": "x"}, {"id": ids[1], "name": "y"}]
+        return res.status(200).json(arr)
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json(error)
+
+    }
 }
 
-export const fetchedData = async (req, res) => {
+export const fetchedData = async (askerId, helperId) => {
 
-    const response = await fetch('/api/users/me')
+    const response = await fetch('http://localhost:3001/users/batch', {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgwIiwiY2FtcHVzIjoiUmFiYXQiLCJpYXQiOjE1MTYyMzkwMjJ9.uNZqfOhsn-UIXoyCubh3sOw6lEnV6MLW4fF6QEAcOEM`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "ids": [1, helperId]
+            })
+        })
         if (!response.ok)
             throw new Error('COULDNT_FETCH')
-        // extract response as json
-        // i will get object with this data [{id: '12', name: 'jack', avatar: 'adw.jpg'}{id: '10', name: 'prety', avatar: 'sads.png'}]
-        // then i have to find in this array of object which belong to which
-        // so i have to compare the objects ids with helper_id or asker_id 
+        console.log('askerId ', askerId, 'helperId ', helperId)
+        const fetchedDt = await response.json();
+        console.log(fetchedData)
+        const askerOne = fetchedDt.find((param) => {return Number(param.id) === 1})
+	    const helperOne = fetchedDt.find((param) => {return Number(param.id) === helperId})
 
-    const data = await response.json();
-    data = data.find((param) => {
-        console.log(param)
-        
-    })
-
+        return {Profiles: {askerOne, helperOne}};
 
 }
 

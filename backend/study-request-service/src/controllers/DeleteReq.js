@@ -9,7 +9,7 @@ export const deltePost = async (req, res) => {
                 status: 'open'
             }
         })
-        return res.status(200).json({delePost})
+        return res.status(200).json({succes: delePost})
     }  catch(err) {
         if (err.code === 'P2025')
             return res.status(404).json({error: "NOT_FOUND"})

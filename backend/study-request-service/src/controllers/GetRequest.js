@@ -1,8 +1,10 @@
 import  {prisma}  from "../instanceDb.js"
+import { fetchedData } from "./FetchB1.js";
 
-export const testServer = (req, res) => {
+export const testServer = async (req, res) => {
     console.log('Hi from study server')
-    res.status(200).json('Hi from study server')
+    // const fetchedDt = await fetchedData(req, res)
+    res.status(200).json({succes: 'Hi from study server'})
 }
 
 export const getAllRequests = async (req, res) => {
@@ -15,9 +17,9 @@ export const getAllRequests = async (req, res) => {
 
     if (!allPost.length)
       return res.status(200).json({message: "No Posts Created Yet"});
-    return res.status(200).json({allPost});
+    return res.status(200).json({succes: allPost});
   } catch (err) {
-    res.status(500).json({ Error: 'UNKOWN_ERROR'})
+    res.status(500).json({ error: 'UNKOWN_ERROR'})
   }
 }
 
@@ -28,8 +30,8 @@ export const viewPost = async (req, res) => {
       where: {id: req.params.id}
     })
     if (!oneRequest)
-      return res.status(404).json({Error: 'NOT_FOUND'})
-    res.status(200).json({oneRequest})
+      return res.status(404).json({error: 'NOT_FOUND'})
+    res.status(200).json({succes: oneRequest})
   } catch(err) {
     res.status(500).json({ Error: 'UNKOWN_ERROR'})
   }
@@ -43,10 +45,10 @@ export const mine = async (req, res) => {
       }
     })
     if (!minePosts.length)
-        return res.status(200).json({Error: 'No requests Posted From You!'})
-    return res.status(200).json({minePosts})
+        return res.status(200).json({error: 'No requests Posted From You!'})
+    return res.status(200).json({succes: minePosts})
   } catch (error) {
-    return res.status(500).json({Error: "UNKOWN_ERROR"})
+    return res.status(500).json({error: "UNKOWN_ERROR"})
   }
 }
 
@@ -59,10 +61,10 @@ export const Iclaimed = async (req, res) => {
       }
     })
     if (!claimed.length)
-        return res.status(200).json({Error: 'No Post are Claimed From You!'})
-    return res.status(200).json({claimed})
+        return res.status(200).json({error: 'No Post are Claimed From You!'})
+    return res.status(200).json({succes: claimed})
   } catch (error) {
-    return res.status(500).json({Error: "UNKOWN_ERROR"})
+    return res.status(500).json({error: "UNKOWN_ERROR"})
   }
 }
 
@@ -81,13 +83,17 @@ export const GetSessionId = async (req, res) => {
       }
     })
     if (!studyInfo || (!studyInfo.meetup && studyInfo.mode === 'insite'))
-      return res.status(404).json({Error: "NOT_FOUND"})
+      return res.status(404).json({error: "NOT_FOUND"})
     if (studyInfo.asker_id !== req.user.id && studyInfo.helper_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+			return res.status(403).json({error: 'CANNOT_ACCES'})
     // maybe fetching here too
-    return res.status(200).json({studyInfo})
+    const {asker_id, helper_id} = studyInfo
+	  const fetchedDt = await fetchedData(asker_id, helper_id)
+
+    return res.status(200).json({succes: studyInfo, ...fetchedDt})
   } catch (err) {
-    return res.status(500).json({Error: "UNKOWN_ERROR"})
+    console.log(err)
+    return res.status(500).json({error: "UNKOWN_ERROR"})
   }
 }
 
@@ -99,20 +105,21 @@ export const getAllMsg = async (req, res) => {
       }
     })
     if (!msgPost)
-      return res.status(404).json({Error: "NOT_FOUND"})
+      return res.status(404).json({error: "NOT_FOUND"})
     if (msgPost.asker_id !== req.user.id && msgPost.helper_id !== req.user.id)
-        return res.status(403).json({Error: 'CANNOT_ACCES'})
+        return res.status(403).json({error: 'CANNOT_ACCES'})
     if (msgPost.status !== 'claimed' || msgPost.mode !== 'online')
-			return res.status(409).json({Error: 'ACTION_FAILED'})
+			return res.status(409).json({error: 'ACTION_FAILED'})
 
     const getMsgs = await prisma.sessionMessage.findMany({
       where: {
         request_id: req.params.id
       }
   })
-  return res.status(200).json({getMsgs})
+
+  return res.status(200).json({succes: getMsgs})
   } catch (error) {
     console.log(error)
-    return res.status(500).json({Error: "UNKOWN_ERROR"})
+    return res.status(500).json({error: "UNKOWN_ERROR"})
   }
 }
