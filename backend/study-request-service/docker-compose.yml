@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: studyreq-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGUSER}
+      POSTGRES_PASSWORD: ${POSTGPWD}
+      POSTGRES_DB: ${POSTGRESDB}
+    ports:
+      - "2450:5432"
+    volumes:
+      - ${HOST_DATA_PATH}:/var/lib/postgresql/data
+      # - postgres_data:/var/lib/postgresql/data
+
+# volumes:
+#   postgres_data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /home/ychedmi/Desktop/testdb
+
