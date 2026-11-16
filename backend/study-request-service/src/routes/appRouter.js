@@ -44,9 +44,9 @@ routeMe.get('/sessions/:id/messages', validateParamId(paramIdObj), getAllMsg) //
 
 routeMe.post('/sessions/:id/accept', validateParamId(paramIdObj), acceptInsite)
 
-routeMe.patch('/sessions/:id/on-the-way', validateParamId(paramIdObj), onTheWay)
+routeMe.post('/sessions/:id/on-the-way', validateParamId(paramIdObj), onTheWay)
 
-routeMe.patch('/sessions/:id/arrived', validateParamId(paramIdObj), arrived)
+routeMe.post('/sessions/:id/arrived', validateParamId(paramIdObj), arrived)
 
 
-routeMe.get('/api/users/me', FetchTest)
+// routeMe.post('/api/users', FetchTest)

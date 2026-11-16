@@ -21,10 +21,10 @@ export const studyReq = async (req, res) => {
 		}
 	  });
 
-	res.status(201).json({newRequest});
+	return res.status(201).json({succes: newRequest});
 	} catch(err) {
 		console.log(err)
-	  res.status(500).json({Error: 'UNKOWN_ERROR' })
+		return res.status(500).json({error: 'UNKOWN_ERROR' })
 	}
   }
 
@@ -35,11 +35,11 @@ export const claimRequest = async (req, res) => {
 			where: { id: req.params.id}
 		})
 		if (!targetReq)
-			return res.status(404).json({Error: 'NOT_FOUND'})
+			return res.status(404).json({error: 'NOT_FOUND'})
 		if (targetReq.status !== 'open')
-			return res.status(409).json({Error: 'ALREADY_CLAIMED'})
+			return res.status(409).json({error: 'ALREADY_CLAIMED'})
 		if (targetReq.asker_id === req.user.id)
-			return res.status(403).json({Error: 'CANNOT_CLAIM_OWN'})
+			return res.status(403).json({error: 'CANNOT_CLAIM_OWN'})
 
 	const updatedResult = await prisma.$transaction(async (tx) => {
 
@@ -70,15 +70,19 @@ export const claimRequest = async (req, res) => {
 	return claimedReq
 })
 	// FETCH B1 for name and avatar
-	const fetchedData = fetchedData()
-	return res.status(200).json({updatedResult})
-} catch (err) {
+	// const {asker_id, helper_id} = updatedResult.claimedReq
+	// const fetchedDt = await fetchedData(asker_id, helper_id)
 	
+	// return res.status(200).json({succes: updatedResult, fetchedDt})
+	return res.status(200).json({succes: "post are claimed succesfuly"})
+
+} catch (err) {
+	console.log(err)
 	if (err.code === "P2025")
-        return res.status(404).json({Error: "NOT_FOUND"})
+        return res.status(404).json({error: "NOT_FOUND"})
 	if (err.message === 'INVALID_INPUT')
-		return res.status(400).json({Error: 'specific spot and meetTime required for insite claims'})
-   	return res.status(500).json({Error: 'UKNOWN_ERROR'})
+		return res.status(400).json({error: 'specific spot and meetTime required for insite claims'})
+   	return res.status(500).json({error: 'UKNOWN_ERROR'})
 }
 
 }
@@ -92,13 +96,13 @@ export const CancelUnclaim = async (req, res) => {
 			}
 		})
 		if (!findPost)
-			return res.status(404).json({Error: 'NOT_FOUND'})
+			return res.status(404).json({error: 'NOT_FOUND'})
 		if (!['pending', 'claimed'].includes(findPost.status))
-			return res.status(409).json({Error: 'NOT_CLAIMED'})
+			return res.status(409).json({error: 'NOT_CLAIMED'})
 		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+			return res.status(403).json({error: 'CANNOT_ACCES'})
 		if (findPost.status === 'pending' && findPost.helper_id === req.user.id)
-			return res.status(403).json({Error: 'CANNOT_CANCEL'})
+			return res.status(403).json({error: 'CANNOT_CANCEL'})
 		const updateRes = await prisma.$transaction(async (tx) => {
 			const uptPost = await tx.studentRequest.update({
 				where: {
@@ -123,8 +127,8 @@ export const CancelUnclaim = async (req, res) => {
 		return res.status(200).json({updateRes})
 	} catch (error) {
 		if (error.code === "P2025")
-        	return res.status(404).json({Error: "NOT_FOUND"})
-		return res.status(500).json({Error: 'UKNOWN_ERROR'})
+        	return res.status(404).json({error: "NOT_FOUND"})
+		return res.status(500).json({error: 'UKNOWN_ERROR'})
 	}
 }
 
@@ -136,11 +140,11 @@ export const PostCompleted = async (req, res) => {
 			}
 		})
 		if (!claimedPost)
-			return res.status(404).json({Error: 'NOT_FOUND'})
+			return res.status(404).json({error: 'NOT_FOUND'})
 		if (claimedPost.status !== 'claimed')
-			return res.status(409).json({Error: 'NOT_CLAIMED'})
+			return res.status(409).json({error: 'NOT_CLAIMED'})
 		if (claimedPost.asker_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+			return res.status(403).json({error: 'CANNOT_ACCES'})
 		
 		await prisma.studentRequest.update({
 			where: {
@@ -150,11 +154,11 @@ export const PostCompleted = async (req, res) => {
 				status: 'completed'
 			}
 		})
-		return res.status(200).json({claimedPost})
+		return res.status(200).json({succes: claimedPost})
 	} catch (error) {
 		if (error.code === "P2025")
-        	return res.status(404).json({Error: "NOT_FOUND"})
-		return res.status(500).json({Error: 'UKNOWN_ERROR'})
+        	return res.status(404).json({error: "NOT_FOUND"})
+		return res.status(500).json({error: 'UKNOWN_ERROR'})
 	}
 }
 
@@ -166,11 +170,11 @@ export const sendMessage = async (req, res) => {
 			}
 		})
 		if (!targetPost)
-			return res.status(404).json({Error: 'NOT_FOUND'})
+			return res.status(404).json({error: 'NOT_FOUND'})
 		if (targetPost.status !== 'claimed' || targetPost.mode !== 'online')
-			return res.status(409).json({Error: 'ACTION_FAILED'})
+			return res.status(409).json({error: 'ACTION_FAILED'})
 		if (targetPost.asker_id !== req.user.id && targetPost.helper_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+			return res.status(403).json({error: 'CANNOT_ACCES'})
 		
 		const {msg} = req.body;
 
@@ -182,7 +186,7 @@ export const sendMessage = async (req, res) => {
 				created_at: new Date()
 			}
 		})
-		return res.status(200).json({createMsgTable})
+		return res.status(200).json({succes: createMsgTable})
 		} catch (error) {
 			if (error.code === "P2025")
         		return res.status(404).json({error: "NOT_FOUND"})
@@ -202,11 +206,11 @@ export const acceptInsite = async (req, res) => {
 			}
 		})
 		if (!findPost || !findPost.meetup)
-			return res.status(404).json({Error: 'NOT_FOUND'})
+			return res.status(404).json({error: 'NOT_FOUND'})
 		if (findPost.status !== 'pending' || findPost.mode !== 'insite')
-			return res.status(409).json({Error: 'ACTION_FAILED'})
+			return res.status(409).json({error: 'ACTION_FAILED'})
 		if (findPost.asker_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+			return res.status(403).json({error: 'CANNOT_ACCES'})
 
 		const uptPost = await prisma.studentRequest.update({
 			where: {
@@ -216,7 +220,7 @@ export const acceptInsite = async (req, res) => {
 				status: 'claimed'
 			}
 		})
-		return res.status(200).json({uptPost})
+		return res.status(200).json({succes: uptPost})
 	} catch (error) {
 		if (error.code === "P2025")
         	return res.status(404).json({error: "NOT_FOUND"})
@@ -232,51 +236,57 @@ export const onTheWay = async (req, res) => {
 				id: req.params.id
 			}
 		})
-		if (!post)
-            res.status(404).json({Error: "NOT_FOUND"})
-		// if (findPost.meetup.asker_on_way)
+		if (!findPost)
+            res.status(404).json({error: "NOT_FOUND"})
 		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+			return res.status(403).json({error: 'CANNOT_ACCES'})
 		if (findPost.status !== 'claimed' || findPost.mode !== 'insite')
-			return res.status(409).json({Error: 'ACTION_FAILED'})
-		const whichUser = findPost.helper_id === req.user.id ? {helper_on_way: 'true'} : {asker_on_way: 'true'}
+			return res.status(409).json({error: 'ACTION_FAILED'})
+		const whichUser = findPost.helper_id === req.user.id ? {helper_on_way: true} : {asker_on_way: true}
 		const uptMeetup = await prisma.sessionMeetup.update({
 			where: {
 				request_id: req.params.id
 			},
 			data: whichUser
 		})
-		return uptMeetup
+		return res.status(200).json({succes: uptMeetup})
 	} catch (error) {
+		console.log(error)
 		if (error.code === "P2025")
         	return res.status(404).json({error: "NOT_FOUND"})
 		return res.status(500).json({error: 'UKNOWN_ERROR'})
 	}
 }
+
 export const arrived = async (req, res) => {
 	/*maybe create an object that contain the status: true or false, and status value*/
 	try {
 		const findPost = await prisma.studentRequest.findUnique({
 			where: {
 				id: req.params.id
+			},
+			include: {
+				meetup: true
 			}
 		})
-		if (!post)
-            res.status(404).json({Error: "NOT_FOUND"})
-		// if (findPost.meetup.asker_on_way)
-		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id)
-			return res.status(403).json({Error: 'CANNOT_ACCES'})
+		if (!findPost)
+            res.status(404).json({error: "NOT_FOUND"})
+		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id 
+			|| (req.user.id === findPost.asker_id && !findPost.meetup.asker_on_way) 
+			|| (req.user.id === findPost.helper_id && !findPost.meetup.helper_on_way))
+			return res.status(403).json({error: 'CANNOT_ACCES'})
 		if (findPost.status !== 'claimed' || findPost.mode !== 'insite')
-			return res.status(409).json({Error: 'ACTION_FAILED'})
-		const whichUser = findPost.helper_id === req.user.id ? {helper_arrived: 'true'} : {asker_arrived: 'true'}
+			return res.status(409).json({error: 'ACTION_FAILED'})
+		const whichUser = findPost.helper_id === req.user.id ? {helper_arrived: true} : {asker_arrived: true}
 		const uptMeetup = await prisma.sessionMeetup.update({
 			where: {
 				request_id: req.params.id
 			},
 			data: whichUser
 		})
-		return uptMeetup
+		return res.status(200).json({succes: uptMeetup})
 	} catch (error) {
+		console.log(error)
 		if (error.code === "P2025")
         	return res.status(404).json({error: "NOT_FOUND"})
 		return res.status(500).json({error: 'UKNOWN_ERROR'})

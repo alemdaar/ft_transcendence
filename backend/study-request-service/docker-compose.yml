@@ -4,13 +4,13 @@ services:
     container_name: studyreq-db
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: study_hub
+      POSTGRES_USER: ${POSTGUSER}
+      POSTGRES_PASSWORD: ${POSTGPWD}
+      POSTGRES_DB: ${POSTGRESDB}
     ports:
-      - "5432:5432"
+      - "2450:5432"
     volumes:
-      - /home/ychedmi/Desktop/studyDb:/var/lib/postgresql/data
+      - ${HOST_DATA_PATH}:/var/lib/postgresql/data
       # - postgres_data:/var/lib/postgresql/data
 
 # volumes:
