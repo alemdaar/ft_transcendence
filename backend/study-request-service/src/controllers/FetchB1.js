@@ -29,7 +29,7 @@ export const fetchedData = async (req, askerId, helperId) => {
         if (!response.ok)
             throw new Error('COULDNT_FETCH')
         const fetchedDt = await response.json();
-        const askerOne = fetchedDt.find((param) => {return Number(param.id) === 1})
+        const askerOne = fetchedDt.find((param) => {return Number(param.id) === askerId})
 	    const helperOne = fetchedDt.find((param) => {return Number(param.id) === helperId})
 
         return {Profiles: {askerOne, helperOne}};
