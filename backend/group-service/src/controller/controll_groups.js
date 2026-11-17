@@ -152,25 +152,38 @@ export const getGroups = async (req, res) => {
 
 export const getOneGroup = async (req, res) => {
 	const userCampus = req.user.campus
+	const UID = Number(req.user.subject)
 	const GID = req.validated.params.id
 	
 	try {
-		const group = await db.group.findUnique({
-			where: {
-				id: GID
-			},
-			omit: {
-				ownerID: true
-			},
-			include: {_count: {select: {members: true}}}
-		})
-		if (group) {
-			if (group.type === 'team' && group.campus !== userCampus) {
-				return res.status(403).json({error: `You cannot view Team groups from a different campus`})
-			}
-			return res.status(200).json(group)
+		const [group, isMember] = await Promise.all([
+			db.group.findUnique({
+				where: {
+					id: GID
+				},
+				omit: {
+					ownerID: true
+				},
+				include: {_count: {select: {members: true}}}
+			}),
+			db.member.findFirst({
+				where: {
+					userID: UID,
+					groupID: GID
+				}
+			})
+		])
+
+		if (!group)
+			return res.status(404).json({error: `Group not found !`})
+		if (group.type === 'team' && group.campus !== userCampus)
+		{
+			console.log(group.campus, userCampus)
+			return res.status(403).json({error: `You cannot view Team groups from a different campus`})
 		}
-		return res.status(404).json({error: `Group not found !`})
+		if (!isMember)
+			return res.status(403).json({error: `You should be member to see group details !`})
+		return res.status(200).json(group)
 	} catch (error) {
 		console.error(error)
 		return res.status(500).json({error: 'Unexpected error, try later...'})

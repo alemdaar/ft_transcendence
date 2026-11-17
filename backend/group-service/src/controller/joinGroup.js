@@ -1,5 +1,5 @@
-import { tr } from 'zod/locales'
 import {db} from '../db.js'
+import AppError from '../utils/AppError.js'
 
 export const joinGeneralGroup = async (req, res) => {
 
@@ -151,8 +151,18 @@ export const getGroupMembers = async (req, res) => {
 			}
 		})
 		if (!group) {
-			return res.status(400).json({error: "group npt found !"})
+			return res.status(400).json({error: "group not found !"})
 		}
+		const ArrayIds = group.members.map(member => member.userID)
+		const profiles = await fetch('http://localhost:3001/users/batch', {
+			method: "GET",
+    		credentials: "include",
+    		headers: {
+    		  "Accept": "application/json",
+    		  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJqZWN0IjoiMTIiLCJjYW1wdXMiOiJSYWJhdCJ9.H31btfEIAYomHQ7qVKqW67XZXGtA9-ONTOc_soDi8B0"
+    		},
+			body: ArrayIds
+		})
 		return res.status(200).json({data: group.members})
 	} catch (error) {
 		console.error(error)
@@ -165,38 +175,38 @@ export const approveTeamJoin = async (req, res) => {
 	const GID = req.validated.params.id
 	const UID = Number(req.user.subject)
 	const requestId = req.validated.params.requestId
+	const code = "GSP123"
 
 	try {
-		const [group, currentUserMembership] = await Promise.all([
-			db.group.findUnique({
-				where: { id: GID },
-				include: { _count: { select: { members: true } } }
-			}),
-			db.member.findFirst({
-				where: { groupID: GID, userID: UID }
-			})
-		])
-
-		if (!group) {
-			return res.status(404).json({error: 'group not found !'})
-		}
-		if (group.type !== 'team') {
-			return res.status(403).json({error: 'operation requires "team" group'})
-		}
-		
-		if (group._count.members >= group.memberLimit) {
-			return res.status(409).json({error: 'Cannot approve request. The group has reached its member limit.'})
-		}
-
-			
-		if (group.ownerID != UID) {
-			return res.status(403).json({error: `operation requires "owner" role`})
-		}
-
 		await db.$transaction(async (tx) => {
+			const result = await tx.$queryRaw`
+				SELECT *
+				FROM "Group"
+				WHERE id = ${GID}
+				FOR UPDATE
+			`
+			const group = result[0]
+			const groupMemberCount = await tx.member.count({
+				where: {
+					groupID: GID
+				}
+			})
+			if (!group)
+				throw new AppError('group not found !', 404, code)
+			if (group.type === 'general')
+				throw new AppError('operation requires "team" group', 403, code)
+			if (groupMemberCount >= group.memberLimit)
+				throw new AppError('Cannot approve request. The group has reached its member limit.',
+					409, code)
+			if (group.ownerID !== UID)
+			{
+				console.log('group.ownerID: ', group.ownerID, ' UID: ', UID)
+				throw new AppError(`operation requires "owner" role`, 403, code)
+			}
 			const request = await tx.join_team.update({
 				where: {
 					id: requestId,
+					groupID: GID,
 					status: 'PENDING'
 				},
 				data: {
@@ -213,8 +223,50 @@ export const approveTeamJoin = async (req, res) => {
 			})
 		})
 		
-		return res.status(200).json({message: 'Join request approved successfully. User is now a member.'})
+		return res.status(201).json({message: 'Join request approved successfully. User is now a member.'})
 		
+	} catch (error) {
+		console.error(error)
+		if (error.code === 'P2025')
+			return res.status(404).json({error: 'Join-request not found or has already been processed.'})
+		if (error.code === code) {
+			return res.status(error.statusCode).json({error: error.message})
+		}
+		return res.status(500).json({error: 'Unexpected error, try later...'})
+	}
+}
+
+export const rejectTeamJoin = async (req, res) => {
+	const GID = req.validated.params.id
+	const UID = Number(req.user.subject)
+	const requestId = req.validated.params.requestId
+
+	try {
+		const group = await db.group.findUnique({
+			where: {
+				id: GID
+			}
+		})
+		if (!group) {
+			return res.status(404).json({error: 'group not found !'})
+		}
+		if (group.type !== 'team') {
+			return res.status(403).json({error: 'operation requires "team" group'})
+		}
+		if (group.ownerID != UID) {
+			return res.status(403).json({error: `operation requires "owner" role`})
+		}
+		const request = await db.join_team.update({
+			where: {
+				id: requestId,
+				groupID: GID,
+				status: 'PENDING'
+			},
+			data: {
+				status: 'REJECTED'
+			}
+		})
+		res.status(201).json({message: 'Join request rejected successfully.'})
 	} catch (error) {
 		console.error(error)
 		if (error.code === 'P2025') {

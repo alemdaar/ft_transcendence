@@ -1,7 +1,7 @@
 import Router from 'express';
 import { healthcheck } from '../controller/healthcheck.js'
 import { createGroup, getGroups, getOneGroup, deleteGroup} from '../controller/controll_groups.js'
-import { joinGeneralGroup, joinTeamGroup, approveTeamJoin, getPendingRequest, getGroupMembers } from '../controller/joinGroup.js'
+import { joinGeneralGroup, joinTeamGroup, approveTeamJoin, rejectTeamJoin, getPendingRequest, getGroupMembers } from '../controller/joinGroup.js'
 import { validate } from '../middleware/validate.js'
 import { authenticate } from '../middleware/JWTauth.js'
 import { GroupSchema, idParamSchema, pageQuerySchema, reqIdSchema } from '../ZODSchema/GroupSchema.js'
@@ -24,7 +24,8 @@ appRouter.post('/groups/:id/join', validate(idParamSchema, 'params'), joinGenera
 
 appRouter.post('/groups/:id/join-request', validate(idParamSchema, 'params'), joinTeamGroup)
 
-appRouter.patch('/groups/:id/join-request/:requestId', validate(idParamSchema, 'params'), validate(reqIdSchema, 'params'), approveTeamJoin)
+appRouter.patch('/groups/:id/join-request/:requestId/approve', validate(idParamSchema, 'params'), validate(reqIdSchema, 'params'), approveTeamJoin)
+appRouter.patch('/groups/:id/join-request/:requestId/reject', validate(idParamSchema, 'params'), validate(reqIdSchema, 'params'), rejectTeamJoin)
 
 appRouter.get('/groups/:id/join-request', validate(idParamSchema, 'params'), getPendingRequest)
 
