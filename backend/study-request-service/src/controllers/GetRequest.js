@@ -11,7 +11,7 @@ export const getAllRequests = async (req, res) => {
 // can throw errors if the database is unavailable or the query fails.
   try {
     const allPost = await prisma.studentRequest.findMany({
-      where : {status: 'open', asker_id: {not: req.user.id}},
+      where : {status: 'open', asker_id: {not: req.user.sub}},
       select: {id: true, topic: true, description: true, mode: true, campus: true, status: true}
     });
 
@@ -41,7 +41,7 @@ export const mine = async (req, res) => {
   try {
     const minePosts = await prisma.studentRequest.findMany({
       where: {
-        asker_id: req.user.id
+        asker_id: req.user.sub
       }
     })
     if (!minePosts.length)
@@ -56,7 +56,7 @@ export const Iclaimed = async (req, res) => {
   try {
     const claimed = await prisma.studentRequest.findMany({
       where: {
-        helper_id: req.user.id,
+        helper_id: req.user.sub,
         status: 'claimed'
       }
     })
@@ -73,7 +73,7 @@ export const GetSessionId = async (req, res) => {
     const studyInfo = await prisma.studentRequest.findUnique({
       where: {
         id: req.params.id,
-        // asker_id: req.user.id, // both should acces to the data !!?
+        // asker_id: req.user.sub, // both should acces to the data !!?
         status: {
           in: ['pending', 'claimed']
         }
@@ -84,11 +84,11 @@ export const GetSessionId = async (req, res) => {
     })
     if (!studyInfo || (!studyInfo.meetup && studyInfo.mode === 'insite'))
       return res.status(404).json({error: "NOT_FOUND"})
-    if (studyInfo.asker_id !== req.user.id && studyInfo.helper_id !== req.user.id)
+    if (studyInfo.asker_id !== req.user.sub && studyInfo.helper_id !== req.user.sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
     // maybe fetching here too
     const {asker_id, helper_id} = studyInfo
-	  const fetchedDt = await fetchedData(asker_id, helper_id)
+	  const fetchedDt = await fetchedData(req, asker_id, helper_id)
 
     return res.status(200).json({succes: studyInfo, ...fetchedDt})
   } catch (err) {
@@ -106,7 +106,7 @@ export const getAllMsg = async (req, res) => {
     })
     if (!msgPost)
       return res.status(404).json({error: "NOT_FOUND"})
-    if (msgPost.asker_id !== req.user.id && msgPost.helper_id !== req.user.id)
+    if (msgPost.asker_id !== req.user.sub && msgPost.helper_id !== req.user.sub)
         return res.status(403).json({error: 'CANNOT_ACCES'})
     if (msgPost.status !== 'claimed' || msgPost.mode !== 'online')
 			return res.status(409).json({error: 'ACTION_FAILED'})

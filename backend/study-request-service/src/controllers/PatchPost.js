@@ -7,7 +7,7 @@ export const editPost = async (req, res) => {
         const edited = await prisma.studentRequest.update({
             where: {
                 id: req.params.id,
-                asker_id: req.user.id,
+                asker_id: req.user.sub,
                 status: 'open'
             },
             data: {

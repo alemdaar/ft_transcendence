@@ -11,7 +11,7 @@ export const studyReq = async (req, res) => {
 	const {topic, description, mode} = req.body;
 	const newRequest = await prisma.studentRequest.create({
 		data: {
-		  asker_id: req.user.id,
+		  asker_id: req.user.sub,
 		  topic: topic,
 		  description: description,
 		  mode: mode,
@@ -38,7 +38,7 @@ export const claimRequest = async (req, res) => {
 			return res.status(404).json({error: 'NOT_FOUND'})
 		if (targetReq.status !== 'open')
 			return res.status(409).json({error: 'ALREADY_CLAIMED'})
-		if (targetReq.asker_id === req.user.id)
+		if (targetReq.asker_id === req.user.sub)
 			return res.status(403).json({error: 'CANNOT_CLAIM_OWN'})
 
 	const updatedResult = await prisma.$transaction(async (tx) => {
@@ -47,7 +47,7 @@ export const claimRequest = async (req, res) => {
 		where: { id: req.params.id},
 		data: {
 			status: targetReq.mode === 'online' ? 'claimed' : 'pending',
-			helper_id: req.user.id
+			helper_id: req.user.sub
 		}
 	})
 	// FOR INSITE
@@ -99,9 +99,9 @@ export const CancelUnclaim = async (req, res) => {
 			return res.status(404).json({error: 'NOT_FOUND'})
 		if (!['pending', 'claimed'].includes(findPost.status))
 			return res.status(409).json({error: 'NOT_CLAIMED'})
-		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id)
+		if (findPost.asker_id !== req.user.sub && findPost.helper_id !== req.user.sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
-		if (findPost.status === 'pending' && findPost.helper_id === req.user.id)
+		if (findPost.status === 'pending' && findPost.helper_id === req.user.sub)
 			return res.status(403).json({error: 'CANNOT_CANCEL'})
 		const updateRes = await prisma.$transaction(async (tx) => {
 			const uptPost = await tx.studentRequest.update({
@@ -109,7 +109,7 @@ export const CancelUnclaim = async (req, res) => {
 					id: req.params.id,
 					OR: [
 						{status: 'pending'},
-						{helper_id: req.user.id}
+						{helper_id: req.user.sub}
 					]
 				},
 				data: {
@@ -143,7 +143,7 @@ export const PostCompleted = async (req, res) => {
 			return res.status(404).json({error: 'NOT_FOUND'})
 		if (claimedPost.status !== 'claimed')
 			return res.status(409).json({error: 'NOT_CLAIMED'})
-		if (claimedPost.asker_id !== req.user.id)
+		if (claimedPost.asker_id !== req.user.sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
 		
 		await prisma.studentRequest.update({
@@ -173,7 +173,7 @@ export const sendMessage = async (req, res) => {
 			return res.status(404).json({error: 'NOT_FOUND'})
 		if (targetPost.status !== 'claimed' || targetPost.mode !== 'online')
 			return res.status(409).json({error: 'ACTION_FAILED'})
-		if (targetPost.asker_id !== req.user.id && targetPost.helper_id !== req.user.id)
+		if (targetPost.asker_id !== req.user.sub && targetPost.helper_id !== req.user.sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
 		
 		const {msg} = req.body;
@@ -181,7 +181,7 @@ export const sendMessage = async (req, res) => {
 		const createMsgTable = await prisma.sessionMessage.create({
 			data:{
 				request_id: req.params.id,
-				sender_id: req.user.id,
+				sender_id: req.user.sub,
 				text: msg,
 				created_at: new Date()
 			}
@@ -209,7 +209,7 @@ export const acceptInsite = async (req, res) => {
 			return res.status(404).json({error: 'NOT_FOUND'})
 		if (findPost.status !== 'pending' || findPost.mode !== 'insite')
 			return res.status(409).json({error: 'ACTION_FAILED'})
-		if (findPost.asker_id !== req.user.id)
+		if (findPost.asker_id !== req.user.sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
 
 		const uptPost = await prisma.studentRequest.update({
@@ -238,11 +238,11 @@ export const onTheWay = async (req, res) => {
 		})
 		if (!findPost)
             res.status(404).json({error: "NOT_FOUND"})
-		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id)
+		if (findPost.asker_id !== req.user.sub && findPost.helper_id !== req.user.sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
 		if (findPost.status !== 'claimed' || findPost.mode !== 'insite')
 			return res.status(409).json({error: 'ACTION_FAILED'})
-		const whichUser = findPost.helper_id === req.user.id ? {helper_on_way: true} : {asker_on_way: true}
+		const whichUser = findPost.helper_id === req.user.sub ? {helper_on_way: true} : {asker_on_way: true}
 		const uptMeetup = await prisma.sessionMeetup.update({
 			where: {
 				request_id: req.params.id
@@ -271,13 +271,13 @@ export const arrived = async (req, res) => {
 		})
 		if (!findPost)
             res.status(404).json({error: "NOT_FOUND"})
-		if (findPost.asker_id !== req.user.id && findPost.helper_id !== req.user.id 
-			|| (req.user.id === findPost.asker_id && !findPost.meetup.asker_on_way) 
-			|| (req.user.id === findPost.helper_id && !findPost.meetup.helper_on_way))
+		if (findPost.asker_id !== req.user.sub && findPost.helper_id !== req.user.sub 
+			|| (req.user.sub === findPost.asker_id && !findPost.meetup.asker_on_way) 
+			|| (req.user.sub === findPost.helper_id && !findPost.meetup.helper_on_way))
 			return res.status(403).json({error: 'CANNOT_ACCES'})
 		if (findPost.status !== 'claimed' || findPost.mode !== 'insite')
 			return res.status(409).json({error: 'ACTION_FAILED'})
-		const whichUser = findPost.helper_id === req.user.id ? {helper_arrived: true} : {asker_arrived: true}
+		const whichUser = findPost.helper_id === req.user.sub ? {helper_arrived: true} : {asker_arrived: true}
 		const uptMeetup = await prisma.sessionMeetup.update({
 			where: {
 				request_id: req.params.id

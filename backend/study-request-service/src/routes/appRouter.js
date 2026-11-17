@@ -6,7 +6,7 @@ import { validate, validateParamId } from '../middleware/validateRequest.js'
 import { authUser } from '../middleware/auth.js'
 import { editPost } from '../controllers/PatchPost.js'
 import { deltePost } from '../controllers/DeleteReq.js'
-import { FetchTest } from '../controllers/FetchB1.js'
+// import { FetchTest } from '../controllers/FetchB1.js'
 
 export const routeMe = express.Router()
 // CHECK USER AUTH
@@ -36,7 +36,7 @@ routeMe.get('/sessions/:id', validateParamId(paramIdObj), GetSessionId) // get i
 
 routeMe.post('/sessions/:id/leaveit', validateParamId(paramIdObj), CancelUnclaim) // cancel claimed or pending post (insite or online)
 
-routeMe.post('/session/:id/completed', validateParamId(paramIdObj), PostCompleted) // completed
+routeMe.post('/sessions/:id/completed', validateParamId(paramIdObj), PostCompleted) // completed
 
 routeMe.post('/sessions/:id/messages', validateParamId(paramIdObj), validate(SessionMsgObj), sendMessage) // send msg and create sessionMsg
 

@@ -5,7 +5,7 @@ export const deltePost = async (req, res) => {
         const delePost = await prisma.studentRequest.delete({
             where: {
                 id: req.params.id,
-                asker_id: req.user.id,
+                asker_id: req.user.sub,
                 status: 'open'
             }
         })

@@ -1,7 +1,0 @@
-fill .env First
-
-cd study-request-service
-npm ci
-docker compose up
-npx prisma db push
-node src/server.js
