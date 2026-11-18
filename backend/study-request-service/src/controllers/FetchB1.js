@@ -16,9 +16,10 @@
 export const fetchedData = async (req, askerId, helperId) => {
 
     const token = req.headers.authorization;
+    let fetchDb = []
     try {
         
-    const response = await fetch('http://localhost:3001/users/batch', {
+        const response = await fetch('http://localhost:3001/users/batch', {
         method: "POST",
         headers: {
             "Authorization": `${token}`,
@@ -29,15 +30,25 @@ export const fetchedData = async (req, askerId, helperId) => {
             })
         })
         if (!response.ok)
-            throw new Error()
-    } catch {
-        return {Profiles: undefined}
+            throw new Error('bad response from b1')
+        fetchDb = await response.json();
+    } catch (error){
+        console.error("B1 user fetch failed, falling back to Unknown user:", error.message);
     }
 
-        const fetchedDt = await response.json();
-        const askerOne = fetchedDt.find((param) => {return Number(param.id) === askerId})
-	    const helperOne = fetchedDt.find((param) => {return Number(param.id) === helperId})
+    const UserFallBack = {
+        "id": null,
+        "username": "Unknown user",
+        "avatarUrl": null
+    }
 
-        return {Profiles: {askerOne, helperOne}};
+    const askerOne = fetchDb.find((data) => {return Number(data.id) === askerId })
+	const helperOne = fetchDb.find((data) => {return Number(data.id) === helperId})
+
+return {profiles:
+{
+    asker: askerOne || UserFallBack,
+    helper: helperOne || UserFallBack
+}};
 }
 
