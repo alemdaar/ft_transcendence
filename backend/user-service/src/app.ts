@@ -1,5 +1,6 @@
 import express from "express";
 import authRouter from "./routes/auth.routes";
+import usersRouter from "./routes/users.routes";
 import { sessionMiddleware } from "./config/session";
 import { trustProxy } from "./config/runtime";
 import { sameOrigin } from "./middleware/same-origin";
@@ -13,6 +14,7 @@ app.use(sameOrigin);
 app.use(express.json({ limit: "16kb" }));
 app.use(sessionMiddleware);
 app.use("/auth", authRouter);
+app.use("/users", usersRouter);
 app.use((_req, res) => res.status(404).json({ error: "Not found" }));
 app.use(errorHandler);
 export default app;

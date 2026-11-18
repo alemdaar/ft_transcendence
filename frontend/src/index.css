@@ -1,43 +1,201 @@
 @import "tailwindcss";
-
 @custom-variant dark (&:where(.dark, .dark *));
-
-/* light mode here  */
+@theme {
+  --color-brand-50: #eefdf3;
+  --color-brand-100: #d6f9e1;
+  --color-brand-200: #b0f1c9;
+  --color-brand-300: #7ce5a9;
+  --color-brand-400: #3ed07f;
+  --color-brand-500: #16b863;
+  --color-brand-600: #0a9a52;
+  --color-brand-700: #067a43;
+  --color-brand-800: #076138;
+  --color-brand-900: #074f2f;
+  --color-brand-950: #032d1c;
+  --color-accent-50: #fff8ed;
+  --color-accent-100: #ffefd4;
+  --color-accent-200: #ffdba8;
+  --color-accent-300: #ffc070;
+  --color-accent-400: #ff9a37;
+  --color-accent-500: #fe7c0f;
+  --color-accent-600: #ef6306;
+  --color-accent-700: #c64a07;
+  --color-accent-800: #9d3a0d;
+  --color-accent-900: #7e3210;
+  --color-accent-950: #451706;
+  --color-ink-50: #f6f7f9;
+  --color-ink-100: #eceef2;
+  --color-ink-200: #d4d9e2;
+  --color-ink-300: #aeb8c9;
+  --color-ink-400: #8294b0;
+  --color-ink-500: #62789b;
+  --color-ink-600: #4d6082;
+  --color-ink-700: #3f4d69;
+  --color-ink-800: #38425a;
+  --color-ink-900: #323950;
+  --color-ink-950: #212637;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+}
 :root {
-  --bg: #F4F7F3;
-  --surface: #FFFFFF;
-  --soft: #EAF1EC;
-  --line: #D5E0D8;
-  --fg: #14231C;
-  --muted: #5B6E63;
-  --primary: #1F6B4F;
-  --primary-hover: #185540;
-  --on-primary: #FFFFFF;
-  --accent: #E9A23B;
+  --bg: #f6f7f9;
+  --surface: #fff;
+  --line: #eceef2;
+  --fg: #323950;
+  --muted: #62789b;
+  --soft: #eceef2;
+  --primary: #0a9a52;
+  --primary-hover: #067a43;
+  --on-primary: #fff;
+  --selected: #eefdf3;
+  --highlight: #067a43;
+  --highlight-hover: #076138;
+  --success: #067a43;
+  --success-line: #b0f1c9;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --danger-line: #fecaca;
 }
-
-/* dark mode  */
 .dark {
-  --bg: #0C1210;
-  --surface: #141D19;
-  --soft: #1B2722;
-  --line: #263530;
-  --fg: #ECF3EE;
-  --muted: #93A79B;
-  --primary: #5FD0A0;
-  --primary-hover: #7ADDB4;
-  --on-primary: #0C1210;
+  color-scheme: dark;
+  --bg: #141a24;
+  --surface: #1d2633;
+  --line: #354255;
+  --fg: #edf2f7;
+  --muted: #a6b4c7;
+  --soft: #283446;
+  --primary: #3ed07f;
+  --primary-hover: #7ce5a9;
+  --on-primary: #032d1c;
+  --selected: #163c2c;
+  --highlight: #7ce5a9;
+  --highlight-hover: #b0f1c9;
+  --success: #7ce5a9;
+  --success-line: #286744;
+  --danger: #fca5a5;
+  --danger-soft: #3b222c;
+  --danger-line: #713b49;
 }
-
 @theme inline {
+  --color-selected: var(--selected);
+  --color-highlight: var(--highlight);
+  --color-highlight-hover: var(--highlight-hover);
+  --color-success: var(--success);
+  --color-success-line: var(--success-line);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
-  --color-soft: var(--soft);
   --color-line: var(--line);
   --color-fg: var(--fg);
   --color-muted: var(--muted);
+  --color-soft: var(--soft);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-on-primary: var(--on-primary);
-  --color-accent: var(--accent);
+}
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-bg text-fg font-sans antialiased;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-line rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-on-primary transition-all hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-surface px-5 py-2.5 text-sm font-semibold text-fg ring-1 ring-line transition-all hover:bg-bg active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-muted transition-all hover:bg-soft active:scale-[0.98];
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-danger-soft px-5 py-2.5 text-sm font-semibold text-danger ring-1 ring-danger-line transition-all hover:bg-danger-soft active:scale-[0.98];
+  }
+  .card {
+    @apply rounded-2xl bg-surface p-5 ring-1 ring-line shadow-sm;
+  }
+  .input {
+    @apply w-full rounded-xl border-0 bg-bg px-4 py-3 text-sm text-fg ring-1 ring-inset ring-line placeholder:text-muted focus:ring-2 focus:ring-brand-500 transition-all;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+}
+
+@layer components {
+  .sidebar-link {
+    @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition-colors hover:bg-soft;
+  }
+  .sidebar-link-active {
+    @apply bg-selected text-highlight;
+  }
+  .theme-toggle {
+    @apply rounded-xl p-2 text-muted transition-colors hover:bg-soft;
+  }
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost,
+  .btn-danger {
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:pointer-events-none disabled:opacity-50;
+  }
+}
+.mobile-sidebar {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 16rem;
+  max-width: 85vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  background: var(--surface);
+  color: var(--fg);
+}
+.mobile-sidebar::backdrop {
+  background: #21263766;
+  backdrop-filter: blur(4px);
+}
+.app-content > main {
+  min-height: auto;
+  padding: 0;
+  background: transparent;
+}
+
+.filter-input {
+  background-color: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 28%, var(--surface));
+  box-shadow: none;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.filter-input:hover {
+  border-color: color-mix(in srgb, var(--highlight) 50%, var(--surface));
+}
+.filter-input:focus {
+  border-color: var(--highlight);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--highlight) 16%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .filter-input {
+    transition: none;
+  }
 }
