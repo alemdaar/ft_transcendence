@@ -1,5 +1,6 @@
 import  {prisma}  from "../instanceDb.js"
 import { fetchedData } from "./FetchB1.js";
+import { IfindPost } from "./FindPost.js";
 
 export const testServer = async (req, res) => {
     console.log('Hi from study server')
@@ -9,9 +10,10 @@ export const testServer = async (req, res) => {
 
 export const getAllRequests = async (req, res) => {
 // can throw errors if the database is unavailable or the query fails.
+const {sub} = req.user
   try {
     const allPost = await prisma.studentRequest.findMany({
-      where : {status: 'open', asker_id: {not: req.user.sub}},
+      where : {status: 'open', asker_id: {not: sub}},
       select: {id: true, topic: true, description: true, mode: true, campus: true, status: true}
     });
 
@@ -25,10 +27,9 @@ export const getAllRequests = async (req, res) => {
 
 export const viewPost = async (req, res) => {
   // can throw errors if the database is unavailable or the query fails.
+  const {id} = req.params
   try {
-    const oneRequest = await prisma.studentRequest.findUnique({
-      where: {id: req.params.id}
-    })
+    const oneRequest = await IfindPost(id)
     if (!oneRequest)
       return res.status(404).json({error: 'NOT_FOUND'})
     res.status(200).json({succes: oneRequest})
@@ -38,10 +39,11 @@ export const viewPost = async (req, res) => {
 }
 // posts that i created
 export const mine = async (req, res) => {
+  const {sub} = req.user
   try {
     const minePosts = await prisma.studentRequest.findMany({
       where: {
-        asker_id: req.user.sub
+        asker_id: sub
       }
     })
     if (!minePosts.length)
@@ -53,10 +55,11 @@ export const mine = async (req, res) => {
 }
 
 export const Iclaimed = async (req, res) => {
+  const {sub} = req.user
   try {
     const claimed = await prisma.studentRequest.findMany({
       where: {
-        helper_id: req.user.sub,
+        helper_id: sub,
         status: 'claimed'
       }
     })
@@ -69,11 +72,12 @@ export const Iclaimed = async (req, res) => {
 }
 
 export const GetSessionId = async (req, res) => {
+  const {id} = req.params, {sub} = req.user
   try {
     const studyInfo = await prisma.studentRequest.findUnique({
       where: {
-        id: req.params.id,
-        // asker_id: req.user.sub, // both should acces to the data !!?
+        id: id,
+        // asker_id: sub, // both should acces to the data !!?
         status: {
           in: ['pending', 'claimed']
         }
@@ -84,7 +88,7 @@ export const GetSessionId = async (req, res) => {
     })
     if (!studyInfo || (!studyInfo.meetup && studyInfo.mode === 'insite'))
       return res.status(404).json({error: "NOT_FOUND"})
-    if (studyInfo.asker_id !== req.user.sub && studyInfo.helper_id !== req.user.sub)
+    if (studyInfo.asker_id !== sub && studyInfo.helper_id !== sub)
 			return res.status(403).json({error: 'CANNOT_ACCES'})
     // maybe fetching here too
     const {asker_id, helper_id} = studyInfo
@@ -98,22 +102,20 @@ export const GetSessionId = async (req, res) => {
 }
 
 export const getAllMsg = async (req, res) => {
+
+  const {id} = req.params, {sub} = req.user
   try {
-    const msgPost = await prisma.studentRequest.findUnique({
-      where: {
-        id: req.params.id
-      }
-    })
+    const msgPost = await IfindPost(id)
     if (!msgPost)
       return res.status(404).json({error: "NOT_FOUND"})
-    if (msgPost.asker_id !== req.user.sub && msgPost.helper_id !== req.user.sub)
+    if (msgPost.asker_id !== sub && msgPost.helper_id !== sub)
         return res.status(403).json({error: 'CANNOT_ACCES'})
     if (msgPost.status !== 'claimed' || msgPost.mode !== 'online')
 			return res.status(409).json({error: 'ACTION_FAILED'})
 
     const getMsgs = await prisma.sessionMessage.findMany({
       where: {
-        request_id: req.params.id
+        request_id: id
       }
   })
 

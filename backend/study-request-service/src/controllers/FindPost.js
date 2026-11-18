@@ -1,15 +1,12 @@
-// import  {prisma}  from "../instanceDb.js"
+import  {prisma}  from "../instanceDb.js"
 
-// export const IfindPost = async (req, res) => {
+export const IfindPost = async (id) => {
     
-//         const post = await prisma.studentRequest.findUnique({
-//         where: {
-//             id: req.params.id
-//         }
-//     })
-//         if (!post)
-//             res.status(404).json({Error: "NOT_FOUND"})
-//         // if (checkUsers && post.asker_id !== req.user.sub && post.helper_id !== req.user.sub)
-//         //     return res.status(403).json({Error: 'CANNOT_ACCES'})
-//         return post;
-// }
+    const findedPost = await prisma.studentRequest.findUnique({
+        where: {
+            id: id
+        }
+    })
+        
+    return findedPost;
+}

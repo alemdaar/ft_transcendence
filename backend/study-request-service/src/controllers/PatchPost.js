@@ -3,11 +3,12 @@ import  {prisma}  from "../instanceDb.js"
 export const editPost = async (req, res) => {
 
     const {topic, description} = req.body;
+    const {id} = req.params, {sub} = req.user
     try {
         const edited = await prisma.studentRequest.update({
             where: {
-                id: req.params.id,
-                asker_id: req.user.sub,
+                id: id,
+                asker_id: sub,
                 status: 'open'
             },
             data: {

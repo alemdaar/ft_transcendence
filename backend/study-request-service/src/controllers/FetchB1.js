@@ -16,6 +16,8 @@
 export const fetchedData = async (req, askerId, helperId) => {
 
     const token = req.headers.authorization;
+    try {
+        
     const response = await fetch('http://localhost:3001/users/batch', {
         method: "POST",
         headers: {
@@ -27,12 +29,15 @@ export const fetchedData = async (req, askerId, helperId) => {
             })
         })
         if (!response.ok)
-            throw new Error('COULDNT_FETCH')
+            throw new Error()
+    } catch {
+        return {Profiles: undefined}
+    }
+
         const fetchedDt = await response.json();
         const askerOne = fetchedDt.find((param) => {return Number(param.id) === askerId})
 	    const helperOne = fetchedDt.find((param) => {return Number(param.id) === helperId})
 
         return {Profiles: {askerOne, helperOne}};
-
 }
 

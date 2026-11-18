@@ -1,11 +1,12 @@
 import  {prisma}  from "../instanceDb.js"
 
 export const deltePost = async (req, res) => {
+    const {id} = req.params, {sub} = req.user
     try {
         const delePost = await prisma.studentRequest.delete({
             where: {
-                id: req.params.id,
-                asker_id: req.user.sub,
+                id: id,
+                asker_id: sub,
                 status: 'open'
             }
         })
