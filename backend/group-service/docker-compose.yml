@@ -4,10 +4,10 @@ services:
     container_name: groups_database
     restart: always
     environment:
-      POSTGRES_USER: transcendence_user
-      POSTGRES_PASSWORD: transcendence_password
-      POSTGRES_DB: groupsDB
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - /home/sfartah/postgres/groups_data:/var/lib/postgresql/data
