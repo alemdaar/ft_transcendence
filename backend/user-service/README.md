@@ -34,7 +34,7 @@ Requests with bodies use `Content-Type: application/json`. Existing registration
 | GET | `/auth/42` | Starts 42 OAuth |
 | GET | `/auth/42/callback` | 42 callback with code and session-bound state |
 | GET | `/auth/me` | Session cookie or `Authorization: Bearer <token>` |
-| POST | `/users/batch` | Session or user Bearer JWT; `{ "ids": [12, 25, 38] }` (0–100 positive 32-bit integer IDs) |
+| POST | `/users/batch` | Session or user Bearer JWT; `{ "ids": [12, 25, 38] }` (positive 32-bit integer IDs) |
 | PATCH | `/auth/me` | Session; one or more of `{displayname, location, avatarUrl}` |
 | POST | `/auth/logout` | Session; destroys current session |
 | POST | `/auth/token` | Session; returns a JWT valid for 900 seconds |

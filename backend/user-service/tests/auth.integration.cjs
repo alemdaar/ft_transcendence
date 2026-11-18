@@ -167,6 +167,7 @@ test("PostgreSQL authentication integration", async t => {
         const cookie = await loginAs("batchone");
         const token = await accessToken(cookie);
         const headers = bearer(token);
+        
         const invalidBodies = [
             {},
             { ids: "1" },
@@ -175,18 +176,30 @@ test("PostgreSQL authentication integration", async t => {
             { ids: [1.5] },
             { ids: ["1"] },
             { ids: [2147483648] },
-            { ids: Array(101).fill(1) },
             { ids: [], unexpected: true }
         ];
+    
         for (const body of invalidBodies) {
             const response = await request("/users/batch", { headers, body });
             assert.equal(response.status, 400, JSON.stringify(body).slice(0, 100));
         }
+    
         const empty = await request("/users/batch", {
             headers, body: { ids: [] }
         });
+    
         assert.equal(empty.status, 200);
         assert.deepEqual(empty.data, []);
+    
+        const largeBatch = await request("/users/batch", {
+            headers,
+            body: {
+                ids: Array.from({ length: 101 }, (_, i) => i + 1)
+            }
+        });
+    
+        assert.equal(largeBatch.status, 200);
+        assert.ok(Array.isArray(largeBatch.data));
     });
 
     await t.test("avatar upload requires authentication", async () => {
