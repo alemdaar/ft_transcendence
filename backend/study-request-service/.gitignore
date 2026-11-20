@@ -1,3 +1,4 @@
 /pg-data
+../pgdata
 random-post.sh
-Dockerfile
+DockerWorkflow.md

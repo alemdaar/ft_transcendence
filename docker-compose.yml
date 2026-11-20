@@ -1,0 +1,39 @@
+
+services:
+  b3-db:
+    image: postgres:15
+    container_name: studyreq-db
+    restart: always
+    env_file: 
+      - path: ./backend/study-request-service/.env
+        required: true
+    # environment:
+    #   POSTGRES_USER: ${POSTGUSER}
+    #   POSTGRES_PASSWORD: ${POSTGPWD}
+    #   POSTGRES_DB: ${POSTGRESDB}
+    ports:
+      - "${DB_PORT:-2450}:5432"
+    #Keep the variable, but provide a default fallback so no flags are needed
+    volumes:
+      - ${HOST_DATA_PATH:-./pgdata}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  peer-serv:
+    build: ./backend/study-request-service
+    image: study-img:latest
+    container_name: study-peer
+    restart: always
+    env_file:
+      - path: ./backend/study-request-service/.env
+        required: true
+    ports:
+      - "3005:3000"
+      - "5555:5555"
+    depends_on:
+      b3-db:
+        condition: service_healthy
