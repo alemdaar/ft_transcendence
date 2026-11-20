@@ -1,0 +1,96 @@
+generator client {
+	provider = "prisma-client-js"
+}
+
+datasource db {
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
+}
+
+// --- ENUMS ---
+enum GroupType {
+	general
+	team
+}
+
+enum MemberRole {
+	OWNER
+	ADMIN
+	MEMBER
+}
+
+enum RequestStatus {
+	PENDING
+	ACCEPTED
+	REJECTED
+}
+
+enum CampusName {
+	Rabat
+	Tetouan
+	Benguerir
+	Khouribga
+}
+
+
+// --- MODELS ---
+
+model Group {
+	id          Int    @id @default(autoincrement())
+	name        String    @db.VarChar
+	type        GroupType
+	description String?   @db.VarChar
+	campus      CampusName
+	memberLimit Int?      @db.SmallInt
+	ownerID     Int
+	createdAt   DateTime  @default(now()) @db.Timestamptz
+	
+	
+	// Relations to other tables
+	members     member[]
+	joinTeams   join_team[]
+	messages    message[]
+	resources   resources[]
+}
+
+model member {
+	id        Int     @id @default(autoincrement())
+	groupID   Int
+	userID    Int
+	role      MemberRole
+	joinedAt  DateTime   @default(now()) @db.Timestamptz
+
+	group     Group      @relation(fields: [groupID], references: [id], onDelete: Cascade)
+}
+
+model join_team {
+	id          Int        @id @default(autoincrement())
+	groupID     Int
+	userID      Int
+	status      RequestStatus
+	requestedAt DateTime      @default(now()) @db.Timestamptz
+
+	group       Group         @relation(fields: [groupID], references: [id], onDelete: Cascade)
+}
+
+model message {
+	id        Int   @id @default(autoincrement())
+	groupID   Int
+	senderID  Int
+	content   String   @db.VarChar
+	createdAt DateTime @default(now()) @db.Timestamptz
+
+	group     Group    @relation(fields: [groupID], references: [id], onDelete: Cascade)
+}
+
+model resources {
+	id          Int   @id @default(autoincrement())
+	groupID     Int
+	addedBy     Int
+	title       String   @db.VarChar
+	description String?  @db.VarChar
+	content     String   @db.Text
+	createdAt   DateTime @default(now()) @db.Timestamptz
+
+	group       Group    @relation(fields: [groupID], references: [id], onDelete: Cascade)
+}
