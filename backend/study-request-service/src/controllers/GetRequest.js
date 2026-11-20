@@ -12,6 +12,7 @@ export const getAllRequests = async (req, res) => {
 // can throw errors if the database is unavailable or the query fails.
 const {sub} = req.user
   try {
+
     const allPost = await prisma.studentRequest.findMany({
       where : {status: 'open', asker_id: {not: sub}},
       select: {id: true, topic: true, description: true, mode: true, campus: true, status: true}
@@ -21,6 +22,7 @@ const {sub} = req.user
       return res.status(200).json({message: "No Posts Created Yet"});
     return res.status(200).json({succes: allPost});
   } catch (err) {
+      console.log(err)
     res.status(500).json({ error: 'UNKOWN_ERROR'})
   }
 }
@@ -102,7 +104,7 @@ export const GetSessionId = async (req, res) => {
 }
 
 export const getAllMsg = async (req, res) => {
-
+  // CHECK THIS LATER: GET ALL MSG WILL GIVE OTHER MSG RELATED TO POST ID
   const {id} = req.params, {sub} = req.user
   try {
     const msgPost = await IfindPost(id)

@@ -113,7 +113,13 @@ export const CancelUnclaim = async (req, res) => {
 					helper_id: null,
 				}
 			});
+			
 			await tx.sessionMeetup.deleteMany({
+				where: {
+					request_id: id
+				}
+			})
+			await tx.sessionMessage.deleteMany({
 				where: {
 					request_id: id
 				}
