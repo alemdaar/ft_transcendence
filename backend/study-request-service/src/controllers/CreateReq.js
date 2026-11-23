@@ -43,7 +43,7 @@ export const claimRequest = async (req, res) => {
 	const updatedResult = await prisma.$transaction(async (tx) => {
 
 	const claimedReq = await tx.studentRequest.update({
-		where: { id: id},
+		where: { id: id, status: 'open'},
 		data: {
 			status: targetReq.mode === 'online' ? 'claimed' : 'pending',
 			helper_id: sub
@@ -203,8 +203,10 @@ export const acceptInsite = async (req, res) => {
 				meetup: true
 			}
 		})
-		if (!findPost || !findPost.meetup)
+		if (!findPost)
 			return res.status(404).json({error: 'NOT_FOUND'})
+		if (!findPost.meetup)
+			return res.status(400).json({error: 'ACTION_FAILED'})
 		if (findPost.status !== 'pending' || findPost.mode !== 'insite')
 			return res.status(409).json({error: 'ACTION_FAILED'})
 		if (findPost.asker_id !== sub)
@@ -220,6 +222,7 @@ export const acceptInsite = async (req, res) => {
 		})
 		return res.status(200).json({succes: uptPost})
 	} catch (error) {
+		console.log(error)
 		if (error.code === "P2025")
         	return res.status(404).json({error: "NOT_FOUND"})
 		return res.status(500).json({error: 'UKNOWN_ERROR'})
@@ -267,6 +270,8 @@ export const arrived = async (req, res) => {
 		})
 		if (!findPost)
             res.status(404).json({error: "NOT_FOUND"})
+		if (!findPost.meetup)
+			return res.status(400).json({error: 'ACTION_FAILED'})
 		if (findPost.asker_id !== sub && findPost.helper_id !== sub 
 			|| (sub === findPost.asker_id && !findPost.meetup.asker_on_way) 
 			|| (sub === findPost.helper_id && !findPost.meetup.helper_on_way))
