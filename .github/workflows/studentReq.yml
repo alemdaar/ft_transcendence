@@ -5,7 +5,7 @@ permissions:
   issues: write
   pull-requests: write
 jobs:
-  test:
+  peer-part:
     runs-on: ubuntu-latest
     services:
       postgres:
