@@ -24,7 +24,7 @@ export default function SessionMeetup({ meetup }) {
       <dl className="grid gap-5 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-muted">Meeting spot</dt>
-          <dd className="mt-1 whitespace-pre-wrap break-words font-medium">
+          <dd className="mt-1 whitespace-pre-wrap wrap-break-word font-medium">
             {meetup.specificSpot}
           </dd>
         </div>
