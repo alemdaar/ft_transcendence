@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite'export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
         proxy: {
+            '/peer-request': { target: 'http://localhost:3000', changeOrigin: true },
+            '/session/': { target: 'http://localhost:3000', changeOrigin: true },
             '/auth': {
                 target: 'http://localhost:3001',
                 changeOrigin: true

@@ -1,8 +1,5 @@
 import { clearAccessToken, getAccessToken } from "./accessToken";
-import { mockEnabled } from "../mocks/config";
-import { mockAuthRequest } from "../mocks/auth";
 async function authRequest(path, { body, signal } = {}) {
-  if (mockEnabled) return mockAuthRequest(path, signal);
   let response;
   try {
     response = await fetch("/auth/" + path, {
@@ -41,14 +38,12 @@ async function authRequest(path, { body, signal } = {}) {
 export async function getCurrentUser(signal) {
   try {
     const user = (await authRequest("me", { signal })).user;
-    if (user && !mockEnabled) await getAccessToken();
+    if (user) await getAccessToken();
     if (!user) clearAccessToken();
     return user
       ? {
           ...user,
-          authProvider: mockEnabled
-            ? user.authProvider
-            : user.authProvider ||
+          authProvider: user.authProvider ||
               sessionStorage.getItem("studypeer-login-method") ||
               "password",
         }
@@ -64,13 +59,13 @@ export async function getCurrentUser(signal) {
 export async function login(email, password) {
   clearAccessToken();
   const data = await authRequest("login", { body: { email, password } });
-  if (!mockEnabled) await getAccessToken();
+  await getAccessToken();
   sessionStorage.setItem("studypeer-login-method", "password");
   return {
     ...data,
     user: {
       ...data.user,
-      authProvider: mockEnabled ? data.user.authProvider : "password",
+      authProvider: "password",
     },
   };
 }

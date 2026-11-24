@@ -1,6 +1,5 @@
-import StudySession from './pages/StudySession';
+import StudySession from "./pages/StudySession";
 import GroupDetails from "./pages/GroupDetails";
-import DemoBanner from "./mocks/DemoBanner";
 import { useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Moon, Sun } from "lucide-react";
@@ -33,7 +32,6 @@ export default function App() {
   return (
     <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-bg text-fg">
-        <DemoBanner />
         <BrowserRouter>
           <Routes>
             <Route element={<Layout themeButton={themeButton} />}>
@@ -41,7 +39,7 @@ export default function App() {
               <Route path="groups/:id" element={<GroupDetails />} />
               <Route path="groups" element={<Groups />} />
               <Route path="sessions/:id" element={<StudySession />} />
-   <Route path="study-request" element={<StudyRequests />} />
+              <Route path="study-request" element={<StudyRequests />} />
             </Route>
             <Route path="login" element={authPage(<Login />)} />
             <Route path="register" element={authPage(<Register />)} />

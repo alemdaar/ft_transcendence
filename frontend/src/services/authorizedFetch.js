@@ -1,7 +1,7 @@
 import { getAccessToken, invalidateAccessToken } from "./accessToken";
 
 export async function authorizedFetch(path, options = {}) {
-  if (!/^\/(groups|peer-request|sessions)([/?]|$)/.test(path))
+  if (!/^\/(groups|peer-request|sessions|session)([/?]|$)/.test(path))
     throw new Error("Unsupported authenticated service path.");
   options.signal?.throwIfAborted();
   let token = await getAccessToken();
