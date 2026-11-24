@@ -1,0 +1,86 @@
+import { authorizedFetch } from './authorizedFetch';
+async function readResponse(response) {
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(
+      data?.error || data?.message || "Could not complete the group request.",
+    );
+  }
+  return data;
+}
+
+export async function getGroups(
+  { scope, page = 1, type = "", search = "", sort = "" },
+  signal,
+) {
+  const query = new URLSearchParams({ scope, page: String(page) });
+  if (scope === "discover") {
+    if (type) query.set("type", type);
+    if (search.trim()) query.set("search", search.trim());
+    if (sort === "oldest") query.set("sort", sort);
+  }
+  const response = await authorizedFetch("/groups?" + query, {
+    method: "GET",
+    credentials: "include",
+    headers: { Accept: "application/json" },
+    signal,
+  });
+  const result = await readResponse(response);
+  if (!Array.isArray(result?.data) || !result?.pagination) {
+    throw new Error("The server returned an unexpected groups response.");
+  }
+  return result;
+}
+
+export async function createGroup(group) {
+  const response = await authorizedFetch("/groups", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(group),
+  });
+  return readResponse(response);
+}
+
+async function groupRequest(id, method, suffix = "", signal) {
+  if (!Number.isSafeInteger(Number(id)) || Number(id) <= 0)
+    throw new Error("Invalid group ID.");
+  const response = await authorizedFetch("/groups/" + Number(id) + suffix, {
+    method,
+    credentials: "include",
+    headers: { Accept: "application/json" },
+    signal,
+  });
+  return readResponse(response);
+}
+
+export async function getGroup(id, signal) {
+  const group = await groupRequest(id, "GET", "", signal);
+  if (!group || Number(group.id) !== Number(id))
+    throw new Error("The server returned an unexpected group response.");
+  return group;
+}
+export const joinGroup = (id) => groupRequest(id, "POST", "/join");
+export const requestGroupJoin = (id) =>
+  groupRequest(id, "POST", "/join-request");
+export const deleteGroup = (id) => groupRequest(id, "DELETE");
+
+export async function getMemberGroup(id, signal) {
+  if (!Number.isSafeInteger(Number(id)) || Number(id) <= 0)
+    throw new Error("Invalid group ID.");
+  let page = 1;
+  while (true) {
+    signal?.throwIfAborted();
+    const result = await getGroups({ scope: "mine", page }, signal);
+    const membership = result.data.find(
+      (group) => String(group.id) === String(id),
+    );
+    if (membership) {
+      const details = await getGroup(id, signal);
+      return { ...membership, ...details };
+    }
+    if (!result.pagination.hasNextPage)
+      throw new Error("Only group members can view group details.");
+    page += 1;
+  }
+}
