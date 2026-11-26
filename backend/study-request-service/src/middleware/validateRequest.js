@@ -1,0 +1,33 @@
+export const validate = (schemaObj) => {
+    
+    return function(req, res, next)
+    {
+        const result = schemaObj.safeParse(req.body);
+        if (!result.success)
+        {
+            const errors = result.error.issues.map((issue) => ({
+                field: issue.path.join("."),
+                message: issue.message
+            }))
+            // console.log({error: errors.})
+            return res.status(400).json({error: errors});
+        }
+        req.body = result.data;
+        next();
+    }
+    
+}
+
+export const validateParamId = (schemaObj) => {
+    
+    return function(req, res, next)
+    {
+        const result = schemaObj.safeParse(req.params);
+        if (!result.success)
+            return res.status(400).json({error: 'invalid id' });
+        req.params = result.data;
+        req.params.id = Number(req.params.id);
+        next();
+    }
+
+}
