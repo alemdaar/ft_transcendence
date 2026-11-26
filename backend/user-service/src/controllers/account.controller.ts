@@ -6,11 +6,34 @@ import { updateProfile, changeUserPassword, deleteUserAccount } from "../service
 import { requestPasswordReset, resetUserPassword } from "../services/password-reset.service";
 import { HttpError } from "../lib/http-error";
 import { destroySession } from "../lib/session";
+import { unlink } from "node:fs/promises";
+import path from "node:path";
+import { saveAvatar, removeLocalAvatar } from "../services/avatar.service";
 
 export async function editProfile(req: Request, res: Response) {
     const result = profileSchema.safeParse(req.body);
-    if (!result.success) return res.status(400).json({ error: "Invalid profile data", details: result.error.issues });
-    return res.json({ user: await updateProfile(res.locals.user as User, result.data) });
+
+    if (!result.success) {
+        return res.status(400).json({
+            error: "Invalid profile data",
+            details: result.error.issues
+        });
+    }
+
+    const user = res.locals.user as User;
+    const updatedUser = await updateProfile(user, result.data);
+
+    if (
+        result.data.avatarUrl !== undefined &&
+        result.data.avatarUrl !== user.avatarUrl
+    ) {
+        await removeLocalAvatar(user.avatarUrl, user.id)
+            .catch(error => {
+                console.error("Failed to remove previous avatar:", error);
+            });
+    }
+
+    return res.json({ user: updatedUser });
 }
 
 export async function changePassword(req: Request, res: Response) {
@@ -51,6 +74,43 @@ export async function deleteAccount(req: Request, res: Response) {
         throw new HttpError(403, "Sign in with 42 again before deleting your account.");
     }
     await deleteUserAccount(user);
+
+    await removeLocalAvatar(user.avatarUrl, user.id)
+        .catch(error => {
+            console.error("Failed to remove deleted account avatar:", error);
+        });
+
     await destroySession(req, res);
     return res.json({ message: "Account deleted" });
+}
+
+export async function uploadAvatar(req: Request, res: Response) {
+    if (!req.file) {
+        throw new HttpError(400, "Avatar image is required");
+    }
+
+    const user = res.locals.user as User;
+    const avatarUrl = await saveAvatar(req.file.buffer, user.id);
+
+    let updatedUser;
+
+    try {
+        updatedUser = await updateProfile(user, { avatarUrl });
+    } catch (error) {
+        // Database update failed: remove the newly uploaded file.
+        await removeLocalAvatar(avatarUrl, user.id)
+            .catch(cleanupError => {
+                console.error("Failed to roll back avatar:", cleanupError);
+            });
+
+        throw error;
+    }
+
+    // Database update succeeded: remove the previous local avatar.
+    await removeLocalAvatar(user.avatarUrl, user.id)
+        .catch(error => {
+            console.error("Failed to remove previous avatar:", error);
+        });
+
+    return res.status(200).json({ user: updatedUser });
 }
