@@ -12,8 +12,8 @@ export function normalizeSession(data) {
   return {
     succes: data.succes,
     profiles: {
-      asker: normalizeProfile(data.profiles?.asker),
-      helper: normalizeProfile(data.profiles?.helper),
+      asker: normalizeProfile(data.profiles?.asker ?? data.Profiles?.askerOne),
+      helper: normalizeProfile(data.profiles?.helper ?? data.Profiles?.helperOne),
     },
   };
 }

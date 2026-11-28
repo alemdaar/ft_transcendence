@@ -4,7 +4,10 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import { verifyEmail, resendCode } from "../../services/auth";
 
-export default function VerifyEmailForm({ initialEmail = "" }) {
+export default function VerifyEmailForm({
+  initialEmail = "",
+  initialCooldown = 0,
+}) {
   const [email, setEmail] = useState(initialEmail);
   const [code, setcode] = useState("");
 
@@ -12,7 +15,7 @@ export default function VerifyEmailForm({ initialEmail = "" }) {
   const [verified, setVerified] = useState(false);
   const [success, setsuccess] = useState("");
   const [loading, setloading] = useState(false);
-  const [coolDown, setCoolDown] = useState(email ? 60 : 0);
+  const [coolDown, setCoolDown] = useState(initialCooldown);
 
   useEffect(() => {
     if (coolDown <= 0) return;

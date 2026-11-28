@@ -1,4 +1,5 @@
 import StudyDemoControls from '../mocks/study-request/StudyDemoControls';
+import StudyTestTokenControls from '../mocks/study-token/StudyTestTokenControls';
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import useStudySession from "../hooks/useStudySession";
@@ -13,6 +14,7 @@ export default function StudySession() {
   return (
     <div className="space-y-7">
       <StudyDemoControls />
+      <StudyTestTokenControls />
       <Link
         to="/study-request?tab=activity"
         className="inline-flex items-center gap-2 text-sm text-muted hover:text-fg"

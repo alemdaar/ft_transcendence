@@ -43,6 +43,19 @@ test('deleted or unavailable users do not hide session information', () => {
   assert.equal(normalizeSession(data).profiles.asker.name, 'Unknown user');
 });
 
+test('session supports the profile names returned by the current backend', () => {
+  const data = session();
+  delete data.profiles;
+  data.Profiles = {
+    askerOne: { id: '65', name: 'Asker', avatar: '/asker.png' },
+    helperOne: { id: '625', name: 'Helper', avatar: '/helper.png' },
+  };
+  assert.equal(normalizeSession(data).profiles.asker.name, 'Asker');
+  assert.equal(normalizeSession(data).profiles.helper.avatar, '/helper.png');
+  data.profiles = { asker: { username: 'New profile' } };
+  assert.equal(normalizeSession(data).profiles.asker.name, 'New profile');
+});
+
 test('profile variants, missing images and invalid profiles', () => {
   assert.equal(normalizeProfile({ username: 'Student', avatarUrl: '/photo.png' }).avatar, '/photo.png');
   assert.equal(normalizeProfile({ name: ' ', username: 'Student' }).name, 'Student');

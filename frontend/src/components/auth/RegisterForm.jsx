@@ -1,3 +1,5 @@
+import { submitRegistration } from "../../services/registration";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import hideIcon from "../../assets/hide.svg";
@@ -10,7 +12,6 @@ export default function RegisterForm() {
   const [password, setpassword] = useState("");
   const [confirmpassword, setconfirmpassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setsuccess] = useState(false);
   const [loading, setloading] = useState(false);
   const navigate = useNavigate();
   const [showpassword, setshowpassword] = useState(false);
@@ -23,8 +24,8 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError("");
-    setsuccess(false);
     if (!email.includes("@")) {
       setError("Please enter a valid email address.");
       return;
@@ -35,6 +36,10 @@ export default function RegisterForm() {
       return;
     }
 
+    if (password !== confirmpassword) {
+      setError("Passwords do not match.");
+      return;
+    }
     const data = {
       email,
       password,
@@ -42,26 +47,10 @@ export default function RegisterForm() {
     };
     setloading(true);
     try {
-      const response = await fetch("/auth/register", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (!response.ok)
-        setError(
-          result.message ||
-            result.error ||
-            "Registeration failed. Please try again",
-        );
-      else {
-        setsuccess(true);
-        navigate("/verify-email", { state: { email } });
-      }
+      const verification = await submitRegistration(data);
+      navigate("/verify-email", { state: verification });
     } catch (error) {
-      setError("Cannot connect to the server.");
+      setError(error.message || "Registration failed. Please try again.");
     } finally {
       setloading(false);
     }
@@ -74,12 +63,6 @@ export default function RegisterForm() {
           className="rounded-xl border border-danger-line bg-danger-soft p-3 text-sm text-danger   "
         >
           {error}
-        </p>
-      )}
-
-      {success && (
-        <p className="rounded-xl border border-success-line bg-selected p-3 text-sm text-success   ">
-          Account created successfully!
         </p>
       )}
 
@@ -170,6 +153,20 @@ export default function RegisterForm() {
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Creating account..." : "Create account"}
       </Button>
+      <p className="text-center text-sm text-muted">
+        Already registered but not verified?{" "}
+        <Link
+          to="/verify-email"
+          state={{
+            email: email.trim().toLowerCase(),
+            resumed: true,
+            retryAfter: 0,
+          }}
+          className="font-semibold text-highlight hover:underline"
+        >
+          Verify email
+        </Link>
+      </p>
     </form>
   );
 }

@@ -1,4 +1,5 @@
 import StudyDemoControls from '../mocks/study-request/StudyDemoControls';
+import StudyTestTokenControls from '../mocks/study-token/StudyTestTokenControls';
 import { useSearchParams } from 'react-router-dom';
 import MyRequestActivity from '../components/study-requests/MyRequestActivity';
 import Button from '../components/ui/Button';
@@ -19,6 +20,7 @@ export default function StudyRequests() {
   return (
     <div className="space-y-6">
       <StudyDemoControls />
+      <StudyTestTokenControls />
       <StudyRequestsHeader onPostRequest={() => setShowForm(true)} />
       <div role="group" aria-label="Study request views" className="flex gap-1 rounded-xl bg-soft p-1">
         <Button className="flex-1" variant={tab === 'feed' ? 'secondary' : 'ghost'} onClick={() => setTab('feed')}>Live Feed</Button>
